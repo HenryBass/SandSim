@@ -8,10 +8,13 @@ class Pixel {
 }
 
 function setup() {
-  var width = 255;
-  var height = 255;
+  const width = 255;
+  const height = 255;
   createCanvas(width, height);
 }
+
+const width = 255;
+const height = 255;
 
 function windowResized() {
   resizeCanvas(width, height);
@@ -20,12 +23,19 @@ function windowResized() {
 var types = ["air", "sand", "water"];
 var pxs = [];
 
-while (pxs.length < 500) {
-  type = types[Math.round(Math.random() * (types.length - 1))];
-
-  var pixel = new Pixel(type, Math.round(Math.random() * 255), Math.round(Math.random() * 255));
-  pxs.push(pixel);
+for (i=0;i<(width*height)i++) {
+  pxs.push([])
 }
+
+for (y=0;y<height;y++) {
+  for (x=0;x<width;x++) {
+    type = types[Math.round(Math.random() * (types.length - 1))];
+
+    var pixel = new Pixel(type, Math.round(Math.random() * width), Math.round(Math.random() * height));
+    pxs[x][y] = pixel;
+  }
+}
+
 
 function draw() {
   background(0);
@@ -36,7 +46,7 @@ function draw() {
     px = pxs[i];
 
     while (j < pxs.length) {
-      
+
       j++;
     }
     
