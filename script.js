@@ -21,8 +21,23 @@ class Sand {
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(200 + colormult);
-    this.g = Math.abs(200 + colormult);
+    this.g = Math.abs(150 + colormult);
     this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map) {
+    var nextmap = map;
+
+    var below = nextmap[x][y+1];
+    if (below != undefined) {
+      if (below.mass < self.mass) {
+        nextmap[x][y+1] = self;
+        nextmap[x][y] = below;
+      } else if (below.mass > self.mass) {
+          nextmap[x][y-1] = self;
+          nextmap[x][y+2] = below;
+      }
+    }
+    return nextmap;
   }
 }
 
@@ -36,8 +51,19 @@ class Water {
     this.g = Math.abs(0 + colormult);
     this.b = Math.abs(200 + colormult);
   }
-  update(x, y, map) {
+  update(x, y, map, self) {
     var nextmap = map;
+
+    var below = nextmap[x][y+1];
+    if (below != undefined) {
+      if (below.mass < self.mass) {
+        nextmap[x][y+1] = self;
+        nextmap[x][y] = below;
+      } else if (below.mass > self.mass) {
+          nextmap[x][y-1] = self;
+          nextmap[x][y+2] = below;
+      }
+    }
     return nextmap;
   }
 }
@@ -90,7 +116,7 @@ function draw() {
   while (y < height) {
     while (x < width) {
       px = pxs[x][y];
-      nextpxs = px.update(px.x, px.y, pxs);
+      nextpxs = px.update(x, y, pxs, px);
       x++;
     }
     x = 0;
@@ -113,9 +139,21 @@ x = 0;
 y = 0;
 }
 
-function mouseDragged() {
+function place() {
   if((mouseX < canvaswidth) && (mouseY < canvasheight)) {
-    var placepx = new Water();
-    pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
+      if(mouseButton === LEFT) {
+        var placepx = new Sand();
+      } else if (mouseButton === RIGHT) {
+        var placepx = new Water();
+      }
+      pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
   }
+}
+
+function mouseDragged() {
+  place()
+}
+
+function mousePressed() {
+  place()
 }
