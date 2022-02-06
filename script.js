@@ -67,10 +67,11 @@ class Water {
   update(x, y, map, self, nextmap) {
 
     var below = nextmap[x][y+1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid = true)) {
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
         nextmap[x][y+1] = self;
         nextmap[x][y] = below;
       } else {
+        
         var r = Math.round((Math.random() * 2) - 1);
         var nextpos = nextmap[x + r][y];
         var defined = (nextpos != undefined)
@@ -147,7 +148,12 @@ function draw() {
     while (x < width) {
       px = pxs[x][y];
       if (px.updated == false) {
-        nextpxs = px.update(x, y, pxs, px, nextpxs);
+        try {
+          nextpxs = px.update(x, y, pxs, px, nextpxs);
+        }
+        catch {
+          0;
+        }
       }
       x++;
     }
