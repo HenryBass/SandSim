@@ -166,7 +166,7 @@ class Fire {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
     var other = nextmap[x + xr][y + yr];
-    if ((other != undefined) && other.type == "wood") {
+    if ((other != undefined) && (other.type == "wood") || (other.type == "moss")) {
 
       nextmap[x + xr][y + yr] = new Fire();
     }
@@ -182,7 +182,7 @@ class Moss {
     this.temp = 0.75;
     this.cond = 0.2;
     this.updated = false;
-    this.solid = false;
+    this.solid = true;
     this.type = "moss";
     this.mass = 3;
     var multval = 55;
