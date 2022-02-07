@@ -119,7 +119,7 @@ class Virus {
     this.temp = 5;
     this.cond = 1;
     this.updated = false;
-    this.solid = false;
+    this.solid = true;
     this.type = "virus";
     this.mass = 3;
     var multval = 55;
@@ -137,6 +137,38 @@ class Virus {
     var other = nextmap[x + xr][y + yr];
     if ((other != undefined) && other.type != "air") {
       nextmap[x + xr][y + yr] = new Virus();
+    }
+    }
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
+class Fire {
+  constructor() {
+    this.temp = 10;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "fire";
+    this.mass = 3;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + colormult);
+    this.g = Math.abs(120 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp < 9) {
+      nextmap[x][y] = new Smoke();
+    } else {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    var other = nextmap[x + xr][y + yr];
+    if ((other != undefined) && other.type == "wood") {
+
+      nextmap[x + xr][y + yr] = new Fire();
     }
     }
     this.updated = true;
@@ -196,10 +228,33 @@ class Stone {
   }
 }
 
+class Wood {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0.8;
+    this.updated = false;
+    this.solid = true;
+    this.type = "wood";
+    this.mass = 10;
+    var multval = 30;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(65 + colormult);
+    this.g = Math.abs(30 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp > 8) {
+      nextmap[x][y] = new Fire();
+    }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Ice {
   constructor() {
-    this.temp = -5;
-    this.cond = 1;
+    this.temp = -10;
+    this.cond = 0.5;
     this.updated = false;
     this.solid = true;
     this.type = "ice";
@@ -222,7 +277,7 @@ class Ice {
 class Water {
   constructor() {
     this.temp = 0.5;
-    this.cond = 0.5;
+    this.cond = 1;
     this.updated = false;
     this.solid = false;
     this.type = "water";
@@ -234,7 +289,7 @@ class Water {
     this.b = Math.abs(200 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp < 0) {
+    if (this.temp < -3) {
       nextmap[x][y] = new Ice();
     } else if (this.temp > 8) {
       nextmap[x][y] = new Steam();
@@ -294,6 +349,48 @@ class Steam {
     }
     } else {
       nextmap[x][y] = new Water();
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Smoke {
+  constructor() {
+    this.temp = 7;
+    this.cond = 0.5;
+    this.updated = false;
+    this.solid = false;
+    this.type = "smoke";
+    this.mass = -0.5;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(100 + colormult);
+    this.g = Math.abs(100 + colormult);
+    this.b = Math.abs(100 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    if (Math.random() >= 0.25) {
+      
+    
+    var below = nextmap[x][y + 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x][y - 1] = self;
+      nextmap[x][y] = below;
+    } else {
+
+      var r = Math.round((Math.random() * 2) - 1);
+      var nextpos = nextmap[x + r][y];
+      var defined = (nextpos != undefined)
+      if ((defined) && (nextpos.solid == false)) {
+        nextmap[x + r][y] = self;
+        nextmap[x][y] = nextpos;
+      }
+    }
+    } else {
+      nextmap[x][y] = new Air();
     }
 
     this.updated = true;
@@ -417,7 +514,12 @@ function draw() {
       
       px.updated = false;
       if (th.checked == true) {
-        fill(px.temp  * 20, 0, 0);
+        if (px.temp >= 0) {
+          fill(px.temp  * 20, 0, 0);
+        } else {
+          fill(0, 0, Math.abs(px.temp) * 20);
+        }
+        
       } else {
         fill(px.r, px.g, px.b);
       }
