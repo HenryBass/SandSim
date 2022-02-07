@@ -192,6 +192,9 @@ class Moss {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
+        if (this.temp > 5) {
+      nextmap[x][y] = new Fire();
+    } else {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
     var other = nextmap[x + xr][y + yr];
@@ -199,7 +202,7 @@ class Moss {
       nextmap[x + xr][y + yr] = new Moss();
 
     }
-
+    }
     this.updated = true;
     return nextmap;
   }
