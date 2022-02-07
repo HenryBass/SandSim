@@ -188,7 +188,9 @@ class Stone {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
-
+    if (this.temp > 8) {
+      nextmap[x][y] = new Lava();
+    }
     this.updated = true;
     return nextmap;
   }
