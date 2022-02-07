@@ -1,3 +1,34 @@
+var c = document.getElementById("canvas");
+var ctx = canvas.getContext('2d', { alpha: false });
+
+c.addEventListener("mousemove", function (e) {
+  getMousePosition(c, e);
+});
+
+
+var mouseX = 1;
+var mouseY = 1;
+var mouseIsPressed = false;
+
+function getMousePosition(canvas, event) {
+  let rect = canvas.getBoundingClientRect();
+  let x = event.clientX - rect.left;
+  let y = event.clientY - rect.top;
+  mouseX = Math.round(x);
+  mouseY = Math.round(y);
+
+}
+
+canvas.onmousedown = function (e) {
+  mouseIsPressed = true;
+}
+
+
+canvas.onmouseup = function (e) {
+  mouseIsPressed = false;
+}
+
+
 class Air {
   constructor() {
     this.temp = 1;
@@ -12,7 +43,7 @@ class Air {
     this.g = Math.abs(200 + colormult);
     this.b = Math.abs(200 + colormult);
   }
-update(x, y, map, self, nextmap) {
+  update(x, y, map, self, nextmap) {
 
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
@@ -132,12 +163,12 @@ class Virus {
     if (this.temp > 7) {
       nextmap[x][y] = new Dirt();
     } else {
-    var xr = Math.round((Math.random() * 2) - 1);
-    var yr = Math.round((Math.random() * 2) - 1);
-    var other = nextmap[x + xr][y + yr];
-    if ((other != undefined) && other.type != "air") {
-      nextmap[x + xr][y + yr] = new Virus();
-    }
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+      var other = nextmap[x + xr][y + yr];
+      if ((other != undefined) && other.type != "air") {
+        nextmap[x + xr][y + yr] = new Virus();
+      }
     }
     this.updated = true;
     return nextmap;
@@ -163,13 +194,13 @@ class Fire {
     if (this.temp < 9) {
       nextmap[x][y] = new Smoke();
     } else {
-    var xr = Math.round((Math.random() * 2) - 1);
-    var yr = Math.round((Math.random() * 2) - 1);
-    var other = nextmap[x + xr][y + yr];
-    if ((other != undefined) && (other.type == "wood") || (other.type == "moss")) {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+      var other = nextmap[x + xr][y + yr];
+      if ((other != undefined) && (other.type == "wood") || (other.type == "moss")) {
 
-      nextmap[x + xr][y + yr] = new Fire();
-    }
+        nextmap[x + xr][y + yr] = new Fire();
+      }
     }
     this.updated = true;
     return nextmap;
@@ -192,16 +223,16 @@ class Moss {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
-        if (this.temp > 5) {
+    if (this.temp > 5) {
       nextmap[x][y] = new Fire();
     } else {
-    var xr = Math.round((Math.random() * 2) - 1);
-    var yr = Math.round((Math.random() * 2) - 1);
-    var other = nextmap[x + xr][y + yr];
-    if ((other != undefined) && (other.type == "water") || (other.type == "virus")) {
-      nextmap[x + xr][y + yr] = new Moss();
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+      var other = nextmap[x + xr][y + yr];
+      if ((other != undefined) && (other.type == "water") || (other.type == "virus")) {
+        nextmap[x + xr][y + yr] = new Moss();
 
-    }
+      }
     }
     this.updated = true;
     return nextmap;
@@ -297,20 +328,20 @@ class Water {
     } else if (this.temp > 8) {
       nextmap[x][y] = new Steam();
     } else {
-    var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x][y + 1] = self;
-      nextmap[x][y] = below;
-    } else {
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
 
-      var r = Math.round((Math.random() * 2) - 1);
-      var nextpos = nextmap[x + r][y];
-      var defined = (nextpos != undefined)
-      if ((defined) && (nextpos.solid == false)) {
-        nextmap[x + r][y] = self;
-        nextmap[x][y] = nextpos;
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + r][y] = self;
+          nextmap[x][y] = nextpos;
+        }
       }
-    }
     }
     this.updated = true;
     return nextmap;
@@ -334,22 +365,22 @@ class Steam {
   update(x, y, map, self, nextmap) {
 
     if (self.temp >= 8) {
-      
-    
-    var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x][y - 1] = self;
-      nextmap[x][y] = below;
-    } else {
 
-      var r = Math.round((Math.random() * 2) - 1);
-      var nextpos = nextmap[x + r][y];
-      var defined = (nextpos != undefined)
-      if ((defined) && (nextpos.solid == false)) {
-        nextmap[x + r][y] = self;
-        nextmap[x][y] = nextpos;
+
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y - 1] = self;
+        nextmap[x][y] = below;
+      } else {
+
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + r][y] = self;
+          nextmap[x][y] = nextpos;
+        }
       }
-    }
     } else {
       nextmap[x][y] = new Water();
     }
@@ -376,22 +407,22 @@ class Smoke {
   update(x, y, map, self, nextmap) {
 
     if (Math.random() >= 0.25) {
-      
-    
-    var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x][y - 1] = self;
-      nextmap[x][y] = below;
-    } else {
 
-      var r = Math.round((Math.random() * 2) - 1);
-      var nextpos = nextmap[x + r][y];
-      var defined = (nextpos != undefined)
-      if ((defined) && (nextpos.solid == false)) {
-        nextmap[x + r][y] = self;
-        nextmap[x][y] = nextpos;
+
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y - 1] = self;
+        nextmap[x][y] = below;
+      } else {
+
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + r][y] = self;
+          nextmap[x][y] = nextpos;
+        }
       }
-    }
     } else {
       nextmap[x][y] = new Air();
     }
@@ -420,21 +451,21 @@ class Lava {
       nextmap[x][y] = new Stone();
     } else {
 
-    
-    var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x][y + 1] = self;
-      nextmap[x][y] = below;
-    } else {
 
-      var r = Math.round((Math.random() * 2) - 1);
-      var nextpos = nextmap[x + r][y];
-      var defined = (nextpos != undefined)
-      if ((defined) && (nextpos.solid == false)) {
-        nextmap[x + r][y] = self;
-        nextmap[x][y] = nextpos;
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
+
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + r][y] = self;
+          nextmap[x][y] = nextpos;
+        }
       }
-    }
     }
 
     this.updated = true;
@@ -445,8 +476,7 @@ class Lava {
 function setup() {
   const width = canvaswidth;
   const height = canvasheight;
-  createCanvas(width, height);
-  noStroke();
+  window.requestAnimationFrame(draw);
 }
 
 const width = 127;
@@ -456,10 +486,6 @@ const canvasheight = 500;
 
 const scalex = (canvaswidth / width);
 const scaley = (canvasheight / height);
-
-function windowResized() {
-  resizeCanvas(width, height);
-}
 
 function makeArray(width, height) {
   var arr = [];
@@ -484,7 +510,8 @@ var x = 0;
 var y = 0;
 
 function draw() {
-  background(0);
+  
+  ctx.clearRect(0, 0, 500, 500);
 
   while (y < height) {
     while (x < width) {
@@ -508,25 +535,28 @@ function draw() {
   }
   x = 0;
   y = 0;
-  
-  
+
+
   var th = document.getElementById("thermal");
+
   while (y < height) {
     while (x < width) {
       px = nextpxs[x][y];
-      
+
       px.updated = false;
       if (th.checked == true) {
         if (px.temp >= 0) {
-          fill(px.temp  * 20, 0, 0);
+          ctx.fillStyle = "rgb(" + px.temp * 20+ ", 0, 0)";
         } else {
-          fill(0, 0, Math.abs(px.temp) * 20);
+          ctx.fillStyle = "rgb(0, 0, " + Math.abs(px.temp) * 20 + ")";
         }
-        
+
       } else {
-        fill(px.r, px.g, px.b);
+        ctx.fillStyle = "rgb(" + px.r + ", " + px.g + ", " + px.b + ")";
       }
-      rect(x * scalex, y * scaley, scalex, scaley);
+
+      ctx.fillRect(x * scalex, y * scaley, scalex, scaley);
+
       x++;
     }
     x = 0;
@@ -536,20 +566,19 @@ function draw() {
   y = 0;
 
   if (mouseIsPressed) {
-
+    try{
     var blocktype = document.getElementById("blocks").value;
     var size = document.getElementById("size").value;
-    try {
+
     if (size > 1) {
-      // ^^ Yes i'm retarded this is just to error it out if out of range lmao
-    
+
       while (y < height) {
         while (x < width) {
           var xdist = Math.abs(x - (mouseX / scalex));
           var ydist = Math.abs(y - (mouseY / scaley));
           if (((xdist * scalex) < size) && ((ydist * scalex) < size)) {
-            eval("var placepx = new " + str(blocktype) + "();")
-          pxs[Math.round(x)][Math.round(y)] = placepx;
+            eval("var placepx = new " + blocktype + "();")
+            pxs[Math.round(x)][Math.round(y)] = placepx;
           }
           x++;
         }
@@ -560,14 +589,16 @@ function draw() {
       y = 0;
 
 
-  } else {
-    eval("var placepx = new " + str(blocktype) + "();")
-    pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
-  }
+    } else {
+      eval("var placepx = new " + blocktype + "();")
+      pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
+    }
+
   } catch {
-      0;
-  }
-  }
-  fill(50);
-  text("FPS: " + Math.round(frameRate()), 10, 10, 70, 80);
+    0;
+  }}
+
+  window.requestAnimationFrame(draw);
 }
+
+setup();
