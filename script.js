@@ -108,7 +108,7 @@ class Gravel {
   update(x, y, map, self, nextmap) {
 
     var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+    if ((below != undefined) && (below.mass <= 1) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
       nextmap[x][y] = below;
     }
@@ -200,6 +200,49 @@ class Fire {
       if ((other != undefined) && (other.type == "wood") || (other.type == "moss")) {
 
         nextmap[x + xr][y + yr] = new Fire();
+      }
+    }
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
+class Fly {
+  constructor() {
+    this.temp = 5;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "fly";
+    this.mass = 1;
+    this.life = 5;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + colormult);
+    this.g = Math.abs(50 + colormult);
+    this.b = Math.abs(100 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if ((this.temp > 9) || (this.life <= 0)) {
+      nextmap[x][y] = new Dirt();
+    } else {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+      var other = nextmap[x + xr][y + yr];
+      if ((other != undefined) && (other.type == "air")) {
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        this.life += 1;
+        var r = Math.random();
+        if (r >= 0.01) {
+          nextmap[x][y] = new Air();
+        } else {
+          nextmap[x][y] = new Fly();
+        }
+        
+      } else {
+        this.life -= 1;
       }
     }
     this.updated = true;
