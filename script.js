@@ -1,6 +1,7 @@
 class Air {
   constructor() {
     this.temp = 1;
+    this.cond = 0.1;
     this.updated = false;
     this.solid = false;
     this.type = "air";
@@ -27,6 +28,7 @@ update(x, y, map, self, nextmap) {
 class Sand {
   constructor() {
     this.temp = 1;
+    this.cond = 0.3;
     this.updated = false;
     this.solid = false;
     this.type = "sand";
@@ -61,6 +63,7 @@ class Sand {
 class Gravel {
   constructor() {
     this.temp = 1;
+    this.cond = 0.6;
     this.updated = false;
     this.solid = false;
     this.type = "gravel";
@@ -84,9 +87,96 @@ class Gravel {
   }
 }
 
+class Dirt {
+  constructor() {
+    this.temp = 1.1;
+    this.cond = 0.1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "dirt";
+    this.mass = 2;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(65 + colormult);
+    this.g = Math.abs(30 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var below = nextmap[x + xr][y + 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x + xr][y + 1] = self;
+      nextmap[x][y] = below;
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Virus {
+  constructor() {
+    this.temp = 5;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "virus";
+    this.mass = 3;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(100 + colormult);
+    this.g = Math.abs(50 + colormult);
+    this.b = Math.abs(100 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp > 7) {
+      nextmap[x][y] = new Dirt();
+    } else {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    var other = nextmap[x + xr][y + yr];
+    if ((other != undefined) && other.type != "air") {
+      nextmap[x + xr][y + yr] = new Virus();
+    }
+    }
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
+class Moss {
+  constructor() {
+    this.temp = 0.75;
+    this.cond = 0.2;
+    this.updated = false;
+    this.solid = false;
+    this.type = "moss";
+    this.mass = 3;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + colormult);
+    this.g = Math.abs(150 + colormult);
+    this.b = Math.abs(50 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    var other = nextmap[x + xr][y + yr];
+    if ((other != undefined) && (other.type == "water") || (other.type == "virus")) {
+      nextmap[x + xr][y + yr] = new Moss();
+
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Stone {
   constructor() {
     this.temp = 1;
+    this.cond = 0.8;
     this.updated = false;
     this.solid = true;
     this.type = "stone";
@@ -104,9 +194,33 @@ class Stone {
   }
 }
 
+class Ice {
+  constructor() {
+    this.temp = -5;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "ice";
+    this.mass = 10;
+    var multval = 20;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(100 + colormult);
+    this.g = Math.abs(150 + colormult);
+    this.b = Math.abs(200 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp > 0) {
+      nextmap[x][y] = new Water();
+    }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Water {
   constructor() {
     this.temp = 0.5;
+    this.cond = 0.5;
     this.updated = false;
     this.solid = false;
     this.type = "water";
@@ -118,7 +232,11 @@ class Water {
     this.b = Math.abs(200 + colormult);
   }
   update(x, y, map, self, nextmap) {
-
+    if (this.temp < 0) {
+      nextmap[x][y] = new Ice();
+    } else if (this.temp > 8) {
+      nextmap[x][y] = new Steam();
+    } else {
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
@@ -133,6 +251,7 @@ class Water {
         nextmap[x][y] = nextpos;
       }
     }
+    }
     this.updated = true;
     return nextmap;
   }
@@ -140,7 +259,8 @@ class Water {
 
 class Steam {
   constructor() {
-    this.temp = 5;
+    this.temp = 7;
+    this.cond = 0.5;
     this.updated = false;
     this.solid = false;
     this.type = "steam";
@@ -153,6 +273,9 @@ class Steam {
   }
   update(x, y, map, self, nextmap) {
 
+    if (self.temp >= 8) {
+      
+    
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y - 1] = self;
@@ -167,6 +290,10 @@ class Steam {
         nextmap[x][y] = nextpos;
       }
     }
+    } else {
+      nextmap[x][y] = new Water();
+    }
+
     this.updated = true;
     return nextmap;
   }
@@ -174,7 +301,8 @@ class Steam {
 
 class Lava {
   constructor() {
-    this.temp = 10;
+    this.temp = 20;
+    this.cond = 0.1;
     this.updated = false;
     this.solid = false;
     this.type = "lava";
@@ -186,7 +314,11 @@ class Lava {
     this.b = Math.abs(20 + colormult);
   }
   update(x, y, map, self, nextmap) {
+    if (this.temp < 5) {
+      nextmap[x][y] = new Stone();
+    } else {
 
+    
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
@@ -201,7 +333,7 @@ class Lava {
         nextmap[x][y] = nextpos;
       }
     }
-
+    }
 
     this.updated = true;
     return nextmap;
@@ -258,8 +390,10 @@ function draw() {
       if (px.updated == false) {
         try {
           nextpxs = px.update(x, y, pxs, px, nextpxs);
-
-
+          var xr = Math.round((Math.random() * 2) - 1);
+          var yr = Math.round((Math.random() * 2) - 1);
+          nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
+          px.temp -= (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
         }
         catch {
           0;
@@ -272,6 +406,8 @@ function draw() {
   }
   x = 0;
   y = 0;
+  
+  
   var th = document.getElementById("thermal");
   while (y < height) {
     while (x < width) {
@@ -296,11 +432,10 @@ function draw() {
 
     var blocktype = document.getElementById("blocks").value;
     var size = document.getElementById("size").value;
-
-    if (size > 1) {
-
-
     try {
+    if (size > 1) {
+      // ^^ Yes i'm retarded this is just to error it out if out of range lmao
+    
       while (y < height) {
         while (x < width) {
           var xdist = Math.abs(x - (mouseX / scalex));
@@ -317,12 +452,15 @@ function draw() {
       x = 0;
       y = 0;
 
-    } catch {
-      0;
-    }
+
   } else {
     eval("var placepx = new " + str(blocktype) + "();")
     pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
   }
+  } catch {
+      0;
   }
+  }
+  fill(50);
+  text("FPS: " + Math.round(frameRate()), 10, 10, 70, 80);
 }
