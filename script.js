@@ -145,6 +145,37 @@ class Dirt {
   }
 }
 
+
+class Snow {
+  constructor() {
+    this.temp = -5;
+    this.cond = 0.5;
+    this.updated = false;
+    this.solid = false;
+    this.type = "snow";
+    this.mass = 1;
+    var multval = 5;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(250 + colormult);
+    this.g = Math.abs(250 + colormult);
+    this.b = Math.abs(250 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp > 0) {
+      nextmap[x][y] = new Water();
+    } else {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var below = nextmap[x + xr][y + 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x + xr][y + 1] = self;
+      nextmap[x][y] = below;
+    }}
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Virus {
   constructor() {
     this.temp = 5;
@@ -225,7 +256,7 @@ class Fly {
   }
   update(x, y, map, self, nextmap) {
     if ((this.temp > 9) || (this.life <= 0)) {
-      nextmap[x][y] = new Dirt();
+      nextmap[x][y] = new Gravel();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
@@ -359,6 +390,7 @@ class Water {
     this.solid = false;
     this.type = "water";
     this.mass = 1;
+    this.falling = false;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(0 + colormult);
@@ -366,17 +398,20 @@ class Water {
     this.b = Math.abs(200 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp < -3) {
+    if (this.temp < -3 && this.falling == false) {
       nextmap[x][y] = new Ice();
-    } else if (this.temp > 8) {
+    } else if (this.temp < 0 && this.falling == true) {
+      nextmap[x][y] = new Snow();
+    } else if (this.temp > 9) {
       nextmap[x][y] = new Steam();
     } else {
       var below = nextmap[x][y + 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
         nextmap[x][y + 1] = self;
         nextmap[x][y] = below;
+        this.falling = true;
       } else {
-
+        this.falling = false;
         var r = Math.round((Math.random() * 2) - 1);
         var nextpos = nextmap[x + r][y];
         var defined = (nextpos != undefined)
@@ -394,7 +429,7 @@ class Water {
 class Steam {
   constructor() {
     this.temp = 7;
-    this.cond = 0.5;
+    this.cond = 1;
     this.updated = false;
     this.solid = false;
     this.type = "steam";
@@ -424,7 +459,7 @@ class Steam {
           nextmap[x][y] = nextpos;
         }
       }
-    } else {
+    } {
       nextmap[x][y] = new Water();
     }
 
