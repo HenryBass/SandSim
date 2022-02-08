@@ -591,7 +591,7 @@ class Steam {
 
     if (self.temp >= 8) {
       var xr = Math.round((Math.random() * 2) - 1);
-      var below = nextmap[x + 1][y - 1];
+      var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
 
       } else {
