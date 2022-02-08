@@ -320,6 +320,9 @@ class Moss {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
     var other = nextmap[x + xr][y + yr];
+    if (this.temp >= 5) {
+      nextmap[x][y] = new DeadMoss();
+    } else {
     if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.9)) {
       this.water += 1;
       if (this.water >= 5) {
@@ -336,7 +339,7 @@ class Moss {
     if (this.water <= 0) {
       nextmap[x][y] = new DeadMoss();
     }
-
+    }
     this.b = this.water * 20;
     this.updated = true;
     return nextmap;
@@ -403,6 +406,10 @@ class Stone {
       this.g = 50 - (this.temp * 5) + this.colormult;
       this.b = 50 - (this.temp * 5) + this.colormult;
       this.r = 50 + (this.temp * 5) + this.colormult;
+    } else {
+      this.g = 50 + this.colormult;
+      this.b = 50 + this.colormult;
+      this.r = 50 + this.colormult;
     }
     this.updated = true;
     return nextmap;
@@ -587,8 +594,6 @@ class Steam {
       var below = nextmap[x + 1][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
 
-        //nextmap[x + 1][y - ] = self;
-        //nextmap[x][y] = below;
       } else {
         var nextpos = nextmap[x + xr][y];
         var defined = (nextpos != undefined)
@@ -693,15 +698,23 @@ function setup() {
 
   window.requestAnimationFrame(draw);
 }
-var screen = 127;//document.getElementById("screen").value;
+
+var screen = document.getElementById("screen").value;
+
+if (document.cookie != undefined) {
+  screen = parseInt(document.cookie);
+  document.getElementById("screen").value = screen;
+} else{
+  document.cookie = screen;
+}
 
 var width = screen;
 var height = screen;
-const canvaswidth = canvas.width;
-const canvasheight = canvas.height;
+var canvaswidth = canvas.width;
+var canvasheight = canvas.height;
 
-const scalex = (canvaswidth / width);
-const scaley = (canvasheight / height);
+var scalex = (canvaswidth / width);
+var scaley = (canvasheight / height);
 
 function makeArray(width, height) {
   var arr = [];
@@ -824,30 +837,12 @@ function draw() {
 }
 
 setup();
-/*
+
 setInterval(function () {
   var screen = document.getElementById("screen").value;
 
   if (screen != width) {
-
-    var width = screen;
-    var height = screen;
-    const scalex = (canvaswidth / width);
-    const scaley = (canvasheight / height);
-    var pxs = makeArray(screen, screen);
-    x = 0;
-    y = 0;
-
-
-    for (y = 0; y < height; y++) {
-      for (x = 0; x < width; x++) {
-        var pixel = new Air();
-        pxs[x][y] = pixel;
-      }
-    }
-  } else {
-    0;
+    document.cookie = screen;
+    location.reload(); 
   }
-
-
-}, 1000);*/
+}, 1000);
