@@ -284,8 +284,9 @@ class Fly {
         nextmap[x + xr][y + yr] = nextmap[x][y];
         this.life += 1;
         var r = Math.random();
-        if (r >= 0.995 || other.type == "moss") {
+        if (r >= 0.995) {
           nextmap[x][y] = new Fly();
+
         } else {
           nextmap[x][y] = new Air();
         }
@@ -705,7 +706,6 @@ if (document.cookie != "") {
   screen = parseInt(document.cookie);
   document.getElementById("screen").value = screen;
 } else {
-
   var screen = 127;
   document.getElementById("screen").value = screen;
   document.cookie = screen;
@@ -844,8 +844,10 @@ setup();
 setInterval(function () {
   screen = document.getElementById("screen").value;
 
-  if (screen != width) {
+var body = document.getElementsByTagName('BODY')[0];
+
+  if (screen != width && (body && body.readyState != 'loading')) {
     document.cookie = screen;
     location.reload(); 
   }
-}, 1000);
+}, 2000);
