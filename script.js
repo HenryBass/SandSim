@@ -491,10 +491,10 @@ class Wood {
     this.solid = true;
     this.type = "wood";
     this.mass = 10;
-    var multval = 30;
+    var multval = 10;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(65 + colormult);
-    this.g = Math.abs(30 + colormult);
+    this.r = Math.abs(55 + colormult);
+    this.g = Math.abs(20 + colormult);
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
