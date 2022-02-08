@@ -701,10 +701,13 @@ function setup() {
 
 var screen = document.getElementById("screen").value;
 
-if (document.cookie != undefined) {
+if (document.cookie != "") {
   screen = parseInt(document.cookie);
   document.getElementById("screen").value = screen;
-} else{
+} else {
+
+  var screen = 127;
+  document.getElementById("screen").value = screen;
   document.cookie = screen;
 }
 
@@ -839,7 +842,7 @@ function draw() {
 setup();
 
 setInterval(function () {
-  var screen = document.getElementById("screen").value;
+  screen = document.getElementById("screen").value;
 
   if (screen != width) {
     document.cookie = screen;
