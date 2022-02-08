@@ -39,9 +39,9 @@ class Air {
     this.mass = 0;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(200 + colormult);
-    this.g = Math.abs(200 + colormult);
-    this.b = Math.abs(200 + colormult);
+    this.r = Math.abs(210 + colormult);
+    this.g = Math.abs(210 + colormult);
+    this.b = Math.abs(210 + colormult);
   }
   update(x, y, map, self, nextmap) {
 
@@ -111,10 +111,11 @@ class Gravel {
     if (this.temp > 8) {
       nextmap[x][y] = new Stone();
     } else {
-    if ((below != undefined) && (below.mass <= 1) && (below.solid != true)) {
-      nextmap[x][y + 1] = self;
-      nextmap[x][y] = below;
-    }}
+      if ((below != undefined) && (below.mass <= 1) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      }
+    }
 
     this.updated = true;
     return nextmap;
@@ -123,7 +124,7 @@ class Gravel {
 
 class Dirt {
   constructor() {
-    this.temp = 1.3;
+    this.temp = 1;
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
@@ -138,9 +139,13 @@ class Dirt {
   update(x, y, map, self, nextmap) {
     var xr = Math.round((Math.random() * 2) - 1);
     var below = nextmap[x + xr][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x + xr][y + 1] = self;
-      nextmap[x][y] = below;
+    if (this.temp <= 10) {
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x + xr][y + 1] = self;
+        nextmap[x][y] = below;
+      }
+    } else {
+      nextmap[x][y] = new Smoke();
     }
 
     this.updated = true;
@@ -167,12 +172,13 @@ class Snow {
     if (this.temp > 0) {
       nextmap[x][y] = new Water();
     } else {
-    var xr = Math.round((Math.random() * 2) - 1);
-    var below = nextmap[x + xr][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x + xr][y + 1] = self;
-      nextmap[x][y] = below;
-    }}
+      var xr = Math.round((Math.random() * 2) - 1);
+      var below = nextmap[x + xr][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x + xr][y + 1] = self;
+        nextmap[x][y] = below;
+      }
+    }
 
     this.updated = true;
     return nextmap;
@@ -200,7 +206,7 @@ class Fungus {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && other.type != "air") {
+      if ((other != undefined) && (other.type == "moss" || other.type == "dirt" || other.type == "wood" || other.type == "fly" || other.type == "fungus" || other.type == "water")) {
         nextmap[x + xr][y + yr] = new Fungus();
       }
     }
@@ -225,7 +231,7 @@ class Fire {
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp < 9) {
+    if (this.temp < 9 || Math.random() >= 0.9) {
       nextmap[x][y] = new Smoke();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
@@ -258,23 +264,23 @@ class Fly {
     this.b = Math.abs(100 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if ((this.temp > 9) || (this.life <= 0)) {
+    if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0)) {
       nextmap[x][y] = new Dirt();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "air")) {
+      if ((other != undefined) && (other.type == "air" || other.type == "moss")) {
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
         this.life += 1;
         var r = Math.random();
-        if (r >= 0.01) {
-          nextmap[x][y] = new Air();
-        } else {
+        if (r >= 0.995 || other.type == "moss") {
           nextmap[x][y] = new Fly();
+        } else {
+          nextmap[x][y] = new Air();
         }
-        
+
       } else {
         this.life -= 1;
       }
@@ -306,7 +312,7 @@ class Moss {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "water") || (other.type == "fungus")) {
+      if ((other != undefined) && ((other.type == "water") || (other.type == "fungus")) && Math.random() >= 0.8) {
         nextmap[x + xr][y + yr] = new Moss();
 
       }
@@ -334,6 +340,69 @@ class Stone {
     if (this.temp > 8) {
       nextmap[x][y] = new Lava();
     }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Titanium {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "titanium";
+    this.mass = 100;
+    var multval = 10;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(150 + colormult);
+    this.g = Math.abs(150 + colormult);
+    this.b = Math.abs(150 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class HeatBlock {
+  constructor() {
+    this.temp = 100;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "HeatBlock";
+    this.mass = 100;
+    var multval = 20;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + colormult);
+    this.g = Math.abs(0 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    this.temp = 100;
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class ColdBlock {
+  constructor() {
+    this.temp = -100;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "ColdBlock";
+    this.mass = 100;
+    var multval = 50;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0 + colormult);
+    this.g = Math.abs(0 + colormult);
+    this.b = Math.abs(200 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    this.temp = -100;
     this.updated = true;
     return nextmap;
   }
@@ -387,7 +456,7 @@ class Ice {
 
 class Water {
   constructor() {
-    this.temp = 0.5;
+    this.temp = 0;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
@@ -403,9 +472,9 @@ class Water {
   update(x, y, map, self, nextmap) {
     if (this.temp < -3 && this.falling == false) {
       nextmap[x][y] = new Ice();
-    } else if (this.temp < 0 && this.falling == true) {
+    } else if (this.temp <= -3 && this.falling == true) {
       nextmap[x][y] = new Snow();
-    } else if (this.temp > 8) {
+    } else if (this.temp > 10) {
       nextmap[x][y] = new Steam();
     } else {
       var below = nextmap[x][y + 1];
@@ -446,23 +515,21 @@ class Steam {
   update(x, y, map, self, nextmap) {
 
     if (self.temp >= 8) {
-
-
-      var below = nextmap[x][y + 1];
+      var xr = Math.round((Math.random() * 2) - 1);
+      var below = nextmap[x + 1][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-        nextmap[x][y - 1] = self;
-        nextmap[x][y] = below;
-      } else {
 
-        var r = Math.round((Math.random() * 2) - 1);
-        var nextpos = nextmap[x + r][y];
+        //nextmap[x + 1][y - ] = self;
+        //nextmap[x][y] = below;
+      } else {
+        var nextpos = nextmap[x + xr][y];
         var defined = (nextpos != undefined)
         if ((defined) && (nextpos.solid == false)) {
-          nextmap[x + r][y] = self;
+          nextmap[x + xr][y] = self;
           nextmap[x][y] = nextpos;
         }
       }
-    } {
+    } else {
       nextmap[x][y] = new Water();
     }
 
@@ -555,15 +622,15 @@ class Lava {
 }
 
 function setup() {
-  const width = canvaswidth;
-  const height = canvasheight;
+
   window.requestAnimationFrame(draw);
 }
+var screen = 127;//document.getElementById("screen").value;
 
-const width = 127;
-const height = 127;
-const canvaswidth = 500;
-const canvasheight = 500;
+var width = screen;
+var height = screen;
+const canvaswidth = canvas.width;
+const canvasheight = canvas.height;
 
 const scalex = (canvaswidth / width);
 const scaley = (canvasheight / height);
@@ -592,7 +659,7 @@ var y = 0;
 
 function draw() {
 
-  ctx.clearRect(0, 0, 500, 500);
+  ctx.clearRect(0, 0, width * scalex, height * scaley);
 
   while (y < height) {
     while (x < width) {
@@ -604,6 +671,7 @@ function draw() {
           var yr = Math.round((Math.random() * 2) - 1);
           nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
           px.temp -= (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
+
         }
         catch {
           0;
@@ -618,6 +686,7 @@ function draw() {
   y = 0;
 
 
+
   var th = document.getElementById("thermal");
 
   while (y < height) {
@@ -627,13 +696,15 @@ function draw() {
       px.updated = false;
       if (th.checked == true) {
         if (px.temp >= 0) {
-          ctx.fillStyle = "rgb(" + px.temp * 20+ ", 0, 0)";
+          ctx.fillStyle = "rgb(" + px.temp * 20 + ", 0, 0)";
         } else {
           ctx.fillStyle = "rgb(0, 0, " + Math.abs(px.temp) * 20 + ")";
         }
 
       } else {
+
         ctx.fillStyle = "rgb(" + px.r + ", " + px.g + ", " + px.b + ")";
+
       }
 
       ctx.fillRect(x * scalex, y * scaley, scalex, scaley);
@@ -646,40 +717,69 @@ function draw() {
   x = 0;
   y = 0;
 
+
   if (mouseIsPressed) {
-    try{
-    var blocktype = document.getElementById("blocks").value;
-    var size = document.getElementById("size").value;
+    try {
+      var blocktype = document.getElementById("blocks").value;
+      var size = document.getElementById("size").value;
 
-    if (size > 1) {
+      if (size > 1) {
 
-      while (y < height) {
-        while (x < width) {
-          var xdist = Math.abs(x - (mouseX / scalex));
-          var ydist = Math.abs(y - (mouseY / scaley));
-          if (((xdist * scalex) < size) && ((ydist * scalex) < size)) {
-            eval("var placepx = new " + blocktype + "();")
-            pxs[Math.round(x)][Math.round(y)] = placepx;
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (((xdist * scalex) < size) && ((ydist * scalex) < size)) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
           }
-          x++;
+          x = 0;
+          y++;
         }
         x = 0;
-        y++;
+        y = 0;
+
+
+      } else {
+        eval("var placepx = new " + blocktype + "();")
+        pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
       }
-      x = 0;
-      y = 0;
 
-
-    } else {
-      eval("var placepx = new " + blocktype + "();")
-      pxs[Math.round(mouseX / scalex)][Math.round(mouseY / scaley)] = placepx;
+    } catch {
+      0;
     }
-
-  } catch {
-    0;
-  }}
+  }
 
   window.requestAnimationFrame(draw);
 }
 
 setup();
+/*
+setInterval(function () {
+  var screen = document.getElementById("screen").value;
+
+  if (screen != width) {
+
+    var width = screen;
+    var height = screen;
+    const scalex = (canvaswidth / width);
+    const scaley = (canvasheight / height);
+    var pxs = makeArray(screen, screen);
+    x = 0;
+    y = 0;
+
+
+    for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+        var pixel = new Air();
+        pxs[x][y] = pixel;
+      }
+    }
+  } else {
+    0;
+  }
+
+
+}, 1000);*/
