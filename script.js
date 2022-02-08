@@ -108,10 +108,13 @@ class Gravel {
   update(x, y, map, self, nextmap) {
 
     var below = nextmap[x][y + 1];
+    if (this.temp > 8) {
+      nextmap[x][y] = new Stone();
+    } else {
     if ((below != undefined) && (below.mass <= 1) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
       nextmap[x][y] = below;
-    }
+    }}
 
     this.updated = true;
     return nextmap;
@@ -120,7 +123,7 @@ class Gravel {
 
 class Dirt {
   constructor() {
-    this.temp = 1.1;
+    this.temp = 1.3;
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
@@ -176,13 +179,13 @@ class Snow {
   }
 }
 
-class Virus {
+class Fungus {
   constructor() {
     this.temp = 5;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "virus";
+    this.type = "fungus";
     this.mass = 3;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -198,7 +201,7 @@ class Virus {
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
       if ((other != undefined) && other.type != "air") {
-        nextmap[x + xr][y + yr] = new Virus();
+        nextmap[x + xr][y + yr] = new Fungus();
       }
     }
     this.updated = true;
@@ -256,7 +259,7 @@ class Fly {
   }
   update(x, y, map, self, nextmap) {
     if ((this.temp > 9) || (this.life <= 0)) {
-      nextmap[x][y] = new Gravel();
+      nextmap[x][y] = new Dirt();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
@@ -303,7 +306,7 @@ class Moss {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "water") || (other.type == "virus")) {
+      if ((other != undefined) && (other.type == "water") || (other.type == "fungus")) {
         nextmap[x + xr][y + yr] = new Moss();
 
       }
@@ -339,7 +342,7 @@ class Stone {
 class Wood {
   constructor() {
     this.temp = 1;
-    this.cond = 0.8;
+    this.cond = 1;
     this.updated = false;
     this.solid = true;
     this.type = "wood";
@@ -351,7 +354,7 @@ class Wood {
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 8) {
+    if (this.temp > 7) {
       nextmap[x][y] = new Fire();
     }
     this.updated = true;
@@ -362,7 +365,7 @@ class Wood {
 class Ice {
   constructor() {
     this.temp = -10;
-    this.cond = 0.5;
+    this.cond = 0.7;
     this.updated = false;
     this.solid = true;
     this.type = "ice";
@@ -402,7 +405,7 @@ class Water {
       nextmap[x][y] = new Ice();
     } else if (this.temp < 0 && this.falling == true) {
       nextmap[x][y] = new Snow();
-    } else if (this.temp > 9) {
+    } else if (this.temp > 8) {
       nextmap[x][y] = new Steam();
     } else {
       var below = nextmap[x][y + 1];
@@ -588,7 +591,7 @@ var x = 0;
 var y = 0;
 
 function draw() {
-  
+
   ctx.clearRect(0, 0, 500, 500);
 
   while (y < height) {
