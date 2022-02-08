@@ -59,16 +59,16 @@ class Air {
 class Sand {
   constructor() {
     this.temp = 1;
-    this.cond = 0.3;
+    this.cond = 1;
     this.updated = false;
     this.solid = false;
     this.type = "sand";
     this.mass = 2;
     var multval = 55;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(195 + colormult);
-    this.g = Math.abs(154 + colormult);
-    this.b = Math.abs(108 + colormult);
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(195 + this.colormult);
+    this.g = Math.abs(154 + this.colormult);
+    this.b = Math.abs(108 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
 
@@ -84,6 +84,12 @@ class Sand {
         nextmap[x + r][y + 1] = self;
         nextmap[x][y] = nextpos;
       }
+    }
+
+    if (this.temp > 0) {
+      this.g = 154 - this.temp + this.colormult;
+      this.b = 108 - this.temp + this.colormult;
+      this.r = 195 + this.temp + this.colormult;
     }
 
     this.updated = true;
@@ -140,9 +146,12 @@ class Dirt {
     var xr = Math.round((Math.random() * 2) - 1);
     var below = nextmap[x + xr][y + 1];
     if (this.temp <= 10) {
+
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
         nextmap[x + xr][y + 1] = self;
         nextmap[x][y] = below;
+      } else if (Math.random() >= 0.9999) {
+        nextmap[x][y] = new Moss();
       }
     } else {
       nextmap[x][y] = new Smoke();
@@ -299,6 +308,7 @@ class Moss {
     this.solid = true;
     this.type = "moss";
     this.mass = 3;
+    this.water = 5;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(50 + colormult);
@@ -306,17 +316,65 @@ class Moss {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
+
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    var other = nextmap[x + xr][y + yr];
+    if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.9)) {
+      this.water += 1;
+      if (this.water >= 5) {
+        nextmap[x + xr][y + yr] = new Moss();
+      }
+
+    } else if (other.type == "fungus") {
+      nextmap[x + xr][y + yr] = new Moss();
+    } else if (other.type == "moss") {
+      other.water += this.water / 10;
+      this.water -= this.water / 10;
+    }
+    this.water -= 0.05 * Math.random();
+    if (this.water <= 0) {
+      nextmap[x][y] = new DeadMoss();
+    }
+
+    this.b = this.water * 20;
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class DeadMoss {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0.5;
+    this.updated = false;
+    this.solid = true;
+    this.type = "moss";
+    this.mass = 3;
+    this.water = 0;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(100 + colormult);
+    this.g = Math.abs(150 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
     if (this.temp > 5) {
       nextmap[x][y] = new Fire();
+    } else if (this.temp >= 2) {
+      nextmap[x][y] = new Dirt();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && ((other.type == "water") || (other.type == "fungus")) && Math.random() >= 0.8) {
-        nextmap[x + xr][y + yr] = new Moss();
+      if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.5)) {
+
+        nextmap[x][y] = new Moss();
 
       }
+
     }
+
     this.updated = true;
     return nextmap;
   }
@@ -331,14 +389,20 @@ class Stone {
     this.type = "stone";
     this.mass = 10;
     var multval = 20;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(50 + colormult);
-    this.g = Math.abs(50 + colormult);
-    this.b = Math.abs(50 + colormult);
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + this.colormult);
+    this.g = Math.abs(50 + this.colormult);
+    this.b = Math.abs(50 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 8) {
+    if (this.temp > 12) {
       nextmap[x][y] = new Lava();
+    }
+
+    if (this.temp > 1) {
+      this.g = 50 - (this.temp * 5) + this.colormult;
+      this.b = 50 - (this.temp * 5) + this.colormult;
+      this.r = 50 + (this.temp * 5) + this.colormult;
     }
     this.updated = true;
     return nextmap;
@@ -354,13 +418,17 @@ class Titanium {
     this.type = "titanium";
     this.mass = 100;
     var multval = 10;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(150 + colormult);
-    this.g = Math.abs(150 + colormult);
-    this.b = Math.abs(150 + colormult);
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(150 + this.colormult);
+    this.g = Math.abs(150 + this.colormult);
+    this.b = Math.abs(150 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-
+    if (this.temp > 1) {
+      this.g = 150 - (this.temp) + this.colormult;
+      this.b = 150 - (this.temp) + this.colormult;
+      this.r = 150 + (this.temp) + this.colormult;
+    }
     this.updated = true;
     return nextmap;
   }
