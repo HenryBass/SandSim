@@ -259,14 +259,14 @@ class Fire {
 
 class Fly {
   constructor() {
-    this.temp = 5;
+    this.temp = 3;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
     this.type = "fly";
     this.preg = false;
     this.mass = 1;
-    this.life = 5;
+    this.life = 10;
     var multval = 55;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(200 + this.colormult);
@@ -288,7 +288,7 @@ class Fly {
 
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
-        if(this.life < 5) {
+        if(this.life < 10) {
         this.life += 1;
         }
         if (Math.random() >= 0.9 && this.preg) {
@@ -300,7 +300,13 @@ class Fly {
       } else if ((other.type == 'moss' || other.type == 'fungus')  && this.preg == false) {
           this.preg = true;
           nextmap[x + xr][y + yr] = nextmap[x][y];
-          nextmap[x][y] = new Air();
+
+          if (Math.random() < 0.9) {
+            nextmap[x][y] = new Air();
+          } else {
+            nextmap[x][y] = new Water();
+          }
+
           this.life += 1;
           
       } else {
@@ -310,11 +316,9 @@ class Fly {
     }
 
     if(this.preg) {
-      this.b = 200;
-      this.r = 0;
+      this.b = 200 + this.colormult;
     } else {
       this.b = 100 + this.colormult;
-      this.r = 200 + this.colormult;
     }
     this.updated = true;
     return nextmap;
