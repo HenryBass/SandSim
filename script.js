@@ -50,7 +50,7 @@ class Air {
       nextmap[x][y + 1] = self;
       nextmap[x][y] = below;
     }
-    this.mass = 1;// - (this.temp / 100);
+
     this.updated = true;
     return nextmap;
   }
