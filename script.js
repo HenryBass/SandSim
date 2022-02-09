@@ -215,7 +215,7 @@ class Fungus {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "moss" || other.type == "dirt" || other.type == "wood" || other.type == "fly" || other.type == "fungus" || other.type == "water")) {
+      if ((other != undefined) && (other.type == "moss" || other.type == "dirt" || other.type == "wood" || other.type == "fungus" || other.type == "water")) {
         nextmap[x + xr][y + yr] = new Fungus();
       }
     }
@@ -227,7 +227,7 @@ class Fungus {
 
 class Fire {
   constructor() {
-    this.temp = 10;
+    this.temp = 15;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
@@ -264,36 +264,52 @@ class Fly {
     this.updated = false;
     this.solid = true;
     this.type = "fly";
+    this.preg = false;
     this.mass = 1;
-    this.life = 5;
+    this.life = 2;
     var multval = 55;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(200 + colormult);
-    this.g = Math.abs(50 + colormult);
-    this.b = Math.abs(100 + colormult);
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + this.colormult);
+    this.g = Math.abs(50 + this.colormult);
+    this.b = Math.abs(100 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
     if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0)) {
+      if (this.preg == false) {
       nextmap[x][y] = new Dirt();
+      } else {
+        nextmap[x][y] = new Fly();
+      }
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "air" || other.type == "moss")) {
+      if (((other != undefined) && (other.type == "air" || other.type == "moss"|| other.type == "fungus"))) {
+        if (other.type == 'moss' || other.type == 'fungus'  && this.preg == false) {
+          this.preg = true;
+        }
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
         this.life += 1;
-        var r = Math.random();
-        if (r >= 0.995) {
+        
+        if (r >= 0.9 && this.preg) {
           nextmap[x][y] = new Fly();
-
+          this.preg = false;
         } else {
           nextmap[x][y] = new Air();
         }
-
+        
       } else {
         this.life -= 1;
       }
+    }
+
+    if(this.preg) {
+      this.b = 200;
+      this.r = 0;
+    } else {
+      this.b = 100 + this.colormult;
+      this.r = 200 + this.colormult;
     }
     this.updated = true;
     return nextmap;
@@ -363,9 +379,10 @@ class DeadMoss {
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 5) {
+    var r = Math.random();
+    if (this.temp > 4 && r >= 0.2) {
       nextmap[x][y] = new Fire();
-    } else if (this.temp >= 2) {
+    } else if (r < 0.2 && this.temp > 4) {
       nextmap[x][y] = new Dirt();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
@@ -499,7 +516,7 @@ class Wood {
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 7) {
+    if (this.temp > 6) {
       nextmap[x][y] = new Fire();
     }
     this.updated = true;
