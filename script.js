@@ -50,7 +50,7 @@ class Air {
       nextmap[x][y + 1] = self;
       nextmap[x][y] = below;
     }
-
+    this.mass = 1;// - (this.temp / 100);
     this.updated = true;
     return nextmap;
   }
@@ -291,7 +291,7 @@ class Fly {
         if(this.life < 10) {
         this.life += 1;
         }
-        if (Math.random() >= 0.9 && this.preg) {
+        if (Math.random() >= 0.95 && this.preg) {
           nextmap[x][y] = new Fly();
           this.preg = false;
         } else {
@@ -301,7 +301,7 @@ class Fly {
           this.preg = true;
           nextmap[x + xr][y + yr] = nextmap[x][y];
 
-          if (Math.random() < 0.9) {
+          if (Math.random() < 0.6) {
             nextmap[x][y] = new Air();
           } else {
             nextmap[x][y] = new Water();
