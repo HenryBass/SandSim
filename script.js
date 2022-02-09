@@ -266,7 +266,7 @@ class Fly {
     this.type = "fly";
     this.preg = false;
     this.mass = 1;
-    this.life = 2;
+    this.life = 5;
     var multval = 55;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(200 + this.colormult);
@@ -284,23 +284,28 @@ class Fly {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if (((other != undefined) && (other.type == "air" || other.type == "moss"|| other.type == "fungus"))) {
-        if (other.type == 'moss' || other.type == 'fungus'  && this.preg == false) {
-          this.preg = true;
-        }
+      if (((other != undefined) && (other.type == "air" ))) {
+
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
+        if(this.life < 5) {
         this.life += 1;
-        
-        if (r >= 0.9 && this.preg) {
+        }
+        if (Math.random() >= 0.9 && this.preg) {
           nextmap[x][y] = new Fly();
           this.preg = false;
         } else {
           nextmap[x][y] = new Air();
         }
-        
+      } else if ((other.type == 'moss' || other.type == 'fungus')  && this.preg == false) {
+          this.preg = true;
+          nextmap[x + xr][y + yr] = nextmap[x][y];
+          nextmap[x][y] = new Air();
+          this.life += 1;
+          
       } else {
         this.life -= 1;
+
       }
     }
 
