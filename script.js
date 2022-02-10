@@ -330,6 +330,109 @@ class Fly {
 
 }
 
+class Uranium {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0.8;
+    this.updated = false;
+    this.solid = false;
+    this.type = "uranium";
+    this.mass = 10;
+    var multval = 70;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0 + this.colormult);
+    this.g = Math.abs(180 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp >= 20) {
+      nextmap[x][y] = new GammaRay();
+    } else {
+    var below = nextmap[x][y + 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x][y + 1] = self;
+      nextmap[x][y] = below;
+    } else {
+      var r = Math.round((Math.random() * 2) - 1);
+      var nextpos = nextmap[x + r][y + 1];
+      var defined = (nextpos != undefined)
+      if ((defined) && (nextpos.solid == false) && (nextpos.mass < this.mass)) {
+        nextmap[x + r][y + 1] = self;
+        nextmap[x][y] = nextpos;
+      }
+    }
+
+    if (this.temp > 0) {
+      this.r = 0 + (this.temp * 50) + this.colormult;
+
+    } else {
+      this.r = 0 + this.colormult;
+
+    }
+    }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class GammaRay {
+  constructor() {
+    this.temp = 500;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "gammaray";
+    this.mass = 1;
+    this.xr = Math.round((Math.random() * 2) - 1);
+    this.yr = Math.round((Math.random() * 2) - 1);
+    var multval = 55;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0 + this.colormult);
+    this.g = Math.abs(200 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
+    this.life = 0;
+  }
+  update(x, y, map, self, nextmap, width) {
+    try {
+      if (this.life >= 300) {
+        nextmap[x][y] = new Smoke()
+      } else {
+      var other = nextmap[x + this.xr][y + this.yr];
+      if ((other != undefined) && other.type == "air") {
+        nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
+        nextmap[x][y] = new Air()
+      } else {
+        var tries = 0;
+        while(((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "air")) && (nextmap[x + this.xr][y + this.yr].type != "gammaray")) {
+          tries += 1;
+          if (tries > 5) {
+            this.xr = 0;
+            this.yr = 0;
+          }
+          this.xr = Math.round(((Math.random()) * 2) - 1);
+          this.yr = Math.round(((Math.random()) * 2) - 1);
+        }
+
+
+        nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
+        nextmap[x][y] = new Air()
+
+
+      }
+      this.life += 1;
+      this.temp = 500 - this.life;
+      }
+
+      } catch(error) {
+        console.log(error.message, error.stack)
+      }
+    tries = 0;
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
 class Moss {
   constructor() {
     this.temp = 0.75;
@@ -472,6 +575,48 @@ class Titanium {
   }
 }
 
+class Insulator {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "insulator";
+    this.mass = 1;
+    var multval = 30;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + this.colormult);
+    this.g = Math.abs(150 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Filter {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "filter";
+    this.mass = 100;
+    var multval = 5;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + this.colormult);
+    this.g = Math.abs(50 + this.colormult);
+    this.b = Math.abs(50 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class HeatBlock {
   constructor() {
     this.temp = 100;
@@ -584,11 +729,12 @@ class Water {
       nextmap[x][y] = new Steam();
     } else {
       var below = nextmap[x][y + 1];
-      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      if (((below != undefined) && (below.mass < self.mass) && (below.solid != true))) {
         nextmap[x][y + 1] = self;
         nextmap[x][y] = below;
         this.falling = true;
-      } else {
+      
+        } else {
         this.falling = false;
         var r = Math.round((Math.random() * 2) - 1);
         var nextpos = nextmap[x + r][y];
@@ -730,6 +876,7 @@ function setup() {
   window.requestAnimationFrame(draw);
 }
 
+{
 var screen = document.getElementById("screen").value;
 
 if (document.cookie != "") {
@@ -748,7 +895,7 @@ var canvasheight = canvas.height;
 
 var scalex = (canvaswidth / width);
 var scaley = (canvasheight / height);
-
+}
 function makeArray(width, height) {
   var arr = [];
   for (let i = 0; i < height; i++) {
@@ -780,7 +927,7 @@ function draw() {
       px = pxs[x][y];
       if (px.updated == false) {
         try {
-          nextpxs = px.update(x, y, pxs, px, nextpxs);
+          nextpxs = px.update(x, y, pxs, px, nextpxs, width);
           var xr = Math.round((Math.random() * 2) - 1);
           var yr = Math.round((Math.random() * 2) - 1);
           nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
