@@ -394,7 +394,7 @@ class GammaRay {
   }
   update(x, y, map, self, nextmap, width) {
     try {
-      if (this.life >= 300) {
+      if (this.life >= 300 || x > width || x <= 0) {
         nextmap[x][y] = new Smoke()
       } else {
       var other = nextmap[x + this.xr][y + this.yr];
@@ -927,7 +927,7 @@ function draw() {
       px = pxs[x][y];
       if (px.updated == false) {
         try {
-          nextpxs = px.update(x, y, pxs, px, nextpxs, width);
+          nextpxs = px.update(x, y, pxs, px, nextpxs, (width - 2));
           var xr = Math.round((Math.random() * 2) - 1);
           var yr = Math.round((Math.random() * 2) - 1);
           nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
