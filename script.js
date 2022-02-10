@@ -277,7 +277,7 @@ class Fly {
   update(x, y, map, self, nextmap) {
     if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0) || (this.hunger <= 0)) {
       if (this.preg == false) {
-      nextmap[x][y] = new Dirt();
+        nextmap[x][y] = new Dirt();
       } else {
         nextmap[x][y] = new Fly();
       }
@@ -285,12 +285,12 @@ class Fly {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if (((other != undefined) && (other.type == "air" ))) {
+      if (((other != undefined) && (other.type == "air"))) {
 
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
-        if(this.life < 10) {
-        this.life += 1;
+        if (this.life < 10) {
+          this.life += 1;
         }
         if (Math.random() >= 0.95 && this.preg) {
           nextmap[x][y] = new Fly();
@@ -300,32 +300,72 @@ class Fly {
           nextmap[x][y] = new Air();
         }
         this.hunger -= 0.1 * Math.random();
-      } else if ((other.type == 'moss' || other.type == 'fungus')  && this.preg == false) {
-          this.preg = true;
-          nextmap[x + xr][y + yr] = nextmap[x][y];
-          this.hunger = 100;
+      } else if ((other.type == 'moss' || other.type == 'fungus') && this.preg == false) {
+        this.preg = true;
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        this.hunger = 100;
 
-          if (Math.random() < 0.6) {
-            nextmap[x][y] = new Air();
-          } else {
-            nextmap[x][y] = new Water();
-          }
+        if (Math.random() < 0.6) {
+          nextmap[x][y] = new Air();
+        } else {
+          nextmap[x][y] = new Water();
+        }
 
-          this.life += 1;
-          
+        this.life += 1;
+
       } else {
         this.life -= 1;
 
       }
     }
 
-    if(this.preg) {
+    if (this.preg) {
       this.b = 200 + this.colormult;
     } else {
       this.b = 100 + this.colormult;
     }
     this.updated = true;
     return nextmap;
+  }
+
+}
+
+class Quarks {
+  constructor() {
+    this.temp = 25;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "quarks";
+
+    this.r = Math.abs(Math.round(Math.random()) * 255);
+    this.g = Math.abs(Math.round(Math.random()) * 255);
+    this.b = Math.abs(Math.round(Math.random()) * 255);
+  }
+
+  update(x, y, map, self, nextmap) {
+
+    if(Math.random() > 0.99) {
+      nextmap[x][y] = new Smoke();
+    } else {
+
+    var xr = Math.round((Math.random() * 8) - 4);
+    var yr = Math.round((Math.random() * 8) - 4);
+
+    var other = nextmap[x + xr][y + yr];
+
+    if ((other != undefined) && (other.type == "air")) {
+
+      nextmap[x + xr][y + yr] = nextmap[x][y];
+      nextmap[x][y] = new Air();
+
+    }
+    this.temp = 25;
+    }
+
+  this.updated = true;
+  return nextmap;
+
   }
 
 }
@@ -348,27 +388,27 @@ class Uranium {
     if (this.temp >= 20) {
       nextmap[x][y] = new GammaRay();
     } else {
-    var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-      nextmap[x][y + 1] = self;
-      nextmap[x][y] = below;
-    } else {
-      var r = Math.round((Math.random() * 2) - 1);
-      var nextpos = nextmap[x + r][y + 1];
-      var defined = (nextpos != undefined)
-      if ((defined) && (nextpos.solid == false) && (nextpos.mass < this.mass)) {
-        nextmap[x + r][y + 1] = self;
-        nextmap[x][y] = nextpos;
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y + 1];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false) && (nextpos.mass < this.mass)) {
+          nextmap[x + r][y + 1] = self;
+          nextmap[x][y] = nextpos;
+        }
       }
-    }
 
-    if (this.temp > 0) {
-      this.r = 0 + (this.temp * 50) + this.colormult;
+      if (this.temp > 0) {
+        this.r = 0 + (this.temp * 50) + this.colormult;
 
-    } else {
-      this.r = 0 + this.colormult;
+      } else {
+        this.r = 0 + this.colormult;
 
-    }
+      }
     }
     this.updated = true;
     return nextmap;
@@ -397,35 +437,35 @@ class GammaRay {
       if (this.life >= 300 || x > width || x <= 0) {
         nextmap[x][y] = new Smoke()
       } else {
-      var other = nextmap[x + this.xr][y + this.yr];
-      if ((other != undefined) && other.type == "air") {
-        nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
-        nextmap[x][y] = new Air()
-      } else {
-        var tries = 0;
-        while(((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "air")) && (nextmap[x + this.xr][y + this.yr].type != "gammaray")) {
-          tries += 1;
-          if (tries > 5) {
-            this.xr = 0;
-            this.yr = 0;
+        var other = nextmap[x + this.xr][y + this.yr];
+        if ((other != undefined) && other.type == "air") {
+          nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
+          nextmap[x][y] = new Air()
+        } else {
+          var tries = 0;
+          while (((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "air")) && (nextmap[x + this.xr][y + this.yr].type != "gammaray")) {
+            tries += 1;
+            if (tries > 5) {
+              this.xr = 0;
+              this.yr = 0;
+            }
+            this.xr = Math.round(((Math.random()) * 2) - 1);
+            this.yr = Math.round(((Math.random()) * 2) - 1);
           }
-          this.xr = Math.round(((Math.random()) * 2) - 1);
-          this.yr = Math.round(((Math.random()) * 2) - 1);
+
+
+          nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
+          nextmap[x][y] = new Air()
+
+
         }
-
-
-        nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
-        nextmap[x][y] = new Air()
-
-
-      }
-      this.life += 1;
-      this.temp = 500 - this.life;
+        this.life += 1;
+        this.temp = 500 - this.life;
       }
 
-      } catch(error) {
-        console.log(error.message, error.stack)
-      }
+    } catch (error) {
+      console.log(error.message, error.stack)
+    }
     tries = 0;
     this.updated = true;
     return nextmap;
@@ -456,22 +496,22 @@ class Moss {
     if (this.temp >= 5) {
       nextmap[x][y] = new DeadMoss();
     } else {
-    if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.9)) {
-      this.water += 1;
-      if (this.water >= 5) {
-        nextmap[x + xr][y + yr] = new Moss();
-      }
+      if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.9)) {
+        this.water += 1;
+        if (this.water >= 5) {
+          nextmap[x + xr][y + yr] = new Moss();
+        }
 
-    } else if (other.type == "fungus") {
-      nextmap[x + xr][y + yr] = new Moss();
-    } else if (other.type == "moss") {
-      other.water += this.water / 10;
-      this.water -= this.water / 10;
-    }
-    this.water -= 0.05 * Math.random();
-    if (this.water <= 0) {
-      nextmap[x][y] = new DeadMoss();
-    }
+      } else if (other.type == "fungus") {
+        nextmap[x + xr][y + yr] = new Moss();
+      } else if (other.type == "moss") {
+        other.water += this.water / 10;
+        this.water -= this.water / 10;
+      }
+      this.water -= 0.05 * Math.random();
+      if (this.water <= 0) {
+        nextmap[x][y] = new DeadMoss();
+      }
     }
     this.b = this.water * 20;
     this.updated = true;
@@ -733,8 +773,8 @@ class Water {
         nextmap[x][y + 1] = self;
         nextmap[x][y] = below;
         this.falling = true;
-      
-        } else {
+
+      } else {
         this.falling = false;
         var r = Math.round((Math.random() * 2) - 1);
         var nextpos = nextmap[x + r][y];
@@ -774,8 +814,8 @@ class Gasoline {
         nextmap[x][y + 1] = self;
         nextmap[x][y] = below;
         this.falling = true;
-      
-        } else {
+
+      } else {
         this.falling = false;
         var r = Math.round((Math.random() * 2) - 1);
         var nextpos = nextmap[x + r][y];
@@ -873,7 +913,7 @@ class Smoke {
 
 class Lava {
   constructor() {
-    this.temp = 20;
+    this.temp = 25;
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
@@ -886,7 +926,7 @@ class Lava {
     this.b = Math.abs(20 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp < 5) {
+    if (this.temp < 12) {
       nextmap[x][y] = new Stone();
     } else {
 
@@ -918,24 +958,24 @@ function setup() {
 }
 
 {
-var screen = document.getElementById("screen").value;
+  var screen = document.getElementById("screen").value;
 
-if (document.cookie != "") {
-  screen = parseInt(document.cookie);
-  document.getElementById("screen").value = screen;
-} else {
-  var screen = 127;
-  document.getElementById("screen").value = screen;
-  document.cookie = screen;
-}
+  if (document.cookie != "") {
+    screen = parseInt(document.cookie);
+    document.getElementById("screen").value = screen;
+  } else {
+    var screen = 127;
+    document.getElementById("screen").value = screen;
+    document.cookie = screen;
+  }
 
-var width = screen;
-var height = screen;
-var canvaswidth = canvas.width;
-var canvasheight = canvas.height;
+  var width = screen;
+  var height = screen;
+  var canvaswidth = canvas.width;
+  var canvasheight = canvas.height;
 
-var scalex = (canvaswidth / width);
-var scaley = (canvasheight / height);
+  var scalex = (canvaswidth / width);
+  var scaley = (canvasheight / height);
 }
 function makeArray(width, height) {
   var arr = [];
@@ -1062,10 +1102,10 @@ setup();
 setInterval(function () {
   screen = document.getElementById("screen").value;
 
-var body = document.getElementsByTagName('BODY')[0];
+  var body = document.getElementsByTagName('BODY')[0];
 
   if (screen != width && (body && body.readyState != 'loading')) {
     document.cookie = screen;
-    location.reload(); 
+    location.reload();
   }
 }, 2000);
