@@ -615,7 +615,7 @@ class Stone {
       nextmap[x][y] = new Lava();
     }
 
-    if (this.temp > 1) {
+    if (this.temp > 0) {
       this.g = 50 - (this.temp * 5) + this.colormult;
       this.b = 50 - (this.temp * 5) + this.colormult;
       this.r = 50 + (this.temp * 5) + this.colormult;
@@ -644,11 +644,62 @@ class Titanium {
     this.b = Math.abs(150 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 1) {
+    if (this.temp > 0) {
       this.g = 150 - (this.temp) + this.colormult;
       this.b = 150 - (this.temp) + this.colormult;
       this.r = 150 + (this.temp) + this.colormult;
     }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Copper {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.ox = 1;
+    this.type = "Copper";
+    this.mass = 100;
+    var multval = 10;
+    this.oxchance = 1;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(185 + this.colormult);
+    this.g = Math.abs(95 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    if (nextmap[xr + x][yr + y].type == "Air" && Math.random() > 0.99) {
+      this.ox += 1;
+    }
+    if (nextmap[xr + x][yr + y].type == "Oxegen") {
+      this.ox += 1;
+    }
+    if (nextmap[xr + x][yr + y].type == "Copper" && nextmap[xr + x][yr + y].ox >= 10 && Math.random() < this.oxchance && this.ox < 10) {
+      this.ox += this.oxchance;
+      this.oxchance -= 0.2 * Math.random();
+    }
+
+    if (this.temp > 25) {
+      nextmap[x][y] = new Lava();
+    }
+    if (this.temp > 0) {
+      this.r = 185 - (this.temp * 5) + this.colormult - this.ox * 5;
+      this.g = 95 + (this.temp * 5) + this.colormult + this.ox * 3;
+      this.b = 0 + (this.temp * 5) + this.colormult + this.ox * 5;
+    } else {
+      this.r = 185 - this.colormult - this.ox * 5;
+      this.g = 95 + this.colormult + this.ox * 3;
+      this.b = 0 + this.colormult + this.ox * 5;
+    }
+
+    if (this.ox > 15) {
+      this.ox = 15;
+  }
     this.updated = true;
     return nextmap;
   }
@@ -667,27 +718,6 @@ class Insulator {
     this.r = Math.abs(200 + this.colormult);
     this.g = Math.abs(150 + this.colormult);
     this.b = Math.abs(0 + this.colormult);
-  }
-  update(x, y, map, self, nextmap) {
-
-    this.updated = true;
-    return nextmap;
-  }
-}
-
-class Filter {
-  constructor() {
-    this.temp = 1;
-    this.cond = 0;
-    this.updated = false;
-    this.solid = true;
-    this.type = "Filter";
-    this.mass = 100;
-    var multval = 5;
-    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(50 + this.colormult);
-    this.g = Math.abs(50 + this.colormult);
-    this.b = Math.abs(50 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
 
