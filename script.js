@@ -35,7 +35,7 @@ class Air {
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
-    this.type = "air";
+    this.type = "Air";
     this.mass = 0;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -62,7 +62,7 @@ class Sand {
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "sand";
+    this.type = "Sand";
     this.mass = 2;
     var multval = 55;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -103,7 +103,7 @@ class Gravel {
     this.cond = 0.6;
     this.updated = false;
     this.solid = false;
-    this.type = "gravel";
+    this.type = "Gravel";
     this.mass = 3;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -134,7 +134,7 @@ class Dirt {
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
-    this.type = "dirt";
+    this.type = "Dirt";
     this.mass = 2;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -169,7 +169,7 @@ class Snow {
     this.cond = 0.5;
     this.updated = false;
     this.solid = false;
-    this.type = "snow";
+    this.type = "Snow";
     this.mass = 1;
     var multval = 5;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -200,7 +200,7 @@ class Fungus {
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "fungus";
+    this.type = "Fungus";
     this.mass = 3;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -215,7 +215,7 @@ class Fungus {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "moss" || other.type == "dirt" || other.type == "wood" || other.type == "fungus" || other.type == "water")) {
+      if ((other != undefined) && (other.type == "Moss" || other.type == "Dirt" || other.type == "Wood" || other.type == "Fungus" || other.type == "Water")) {
         nextmap[x + xr][y + yr] = new Fungus();
       }
     }
@@ -231,7 +231,7 @@ class Fire {
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "fire";
+    this.type = "Fire";
     this.mass = 3;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -246,7 +246,7 @@ class Fire {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "wood") || (other.type == "moss")) {
+      if ((other != undefined) && (other.type == "Wood") || (other.type == "Moss")) {
 
         nextmap[x + xr][y + yr] = new Fire();
       }
@@ -263,7 +263,7 @@ class Fly {
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "fly";
+    this.type = "Fly";
     this.preg = false;
     this.hunger = 100;
     this.mass = 1;
@@ -285,7 +285,7 @@ class Fly {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if (((other != undefined) && (other.type == "air"))) {
+      if (((other != undefined) && (other.type == "Air"))) {
 
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
@@ -300,7 +300,7 @@ class Fly {
           nextmap[x][y] = new Air();
         }
         this.hunger -= 0.1 * Math.random();
-      } else if ((other.type == 'moss' || other.type == 'fungus') && this.preg == false) {
+      } else if ((other.type == 'Moss' || other.type == 'Fungus') && this.preg == false) {
         this.preg = true;
         nextmap[x + xr][y + yr] = nextmap[x][y];
         this.hunger = 100;
@@ -336,7 +336,7 @@ class Quarks {
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "quarks";
+    this.type = "Quarks";
 
     this.r = Math.abs(Math.round(Math.random()) * 255);
     this.g = Math.abs(Math.round(Math.random()) * 255);
@@ -354,7 +354,7 @@ class Quarks {
 
     var other = nextmap[x + xr][y + yr];
 
-    if ((other != undefined) && (other.type == "air")) {
+    if ((other != undefined) && (other.type == "Air")) {
 
       nextmap[x + xr][y + yr] = nextmap[x][y];
       nextmap[x][y] = new Air();
@@ -376,7 +376,7 @@ class Uranium {
     this.cond = 0.8;
     this.updated = false;
     this.solid = false;
-    this.type = "uranium";
+    this.type = "Uranium";
     this.mass = 10;
     var multval = 70;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -421,7 +421,7 @@ class GammaRay {
     this.cond = 0;
     this.updated = false;
     this.solid = true;
-    this.type = "gammaray";
+    this.type = "GammaRay";
     this.mass = 1;
     this.xr = Math.round((Math.random() * 2) - 1);
     this.yr = Math.round((Math.random() * 2) - 1);
@@ -438,16 +438,23 @@ class GammaRay {
         nextmap[x][y] = new Smoke()
       } else {
         var other = nextmap[x + this.xr][y + this.yr];
-        if ((other != undefined) && other.type == "air") {
+        if ((other != undefined) && other.type == "Air") {
           nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
           nextmap[x][y] = new Air()
         } else {
           var tries = 0;
-          while (((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "air")) && (nextmap[x + this.xr][y + this.yr].type != "gammaray")) {
+          while (((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "Air")) && (nextmap[x + this.xr][y + this.yr].type != "GammaRay")) {
             tries += 1;
             if (tries > 5) {
               this.xr = 0;
               this.yr = 0;
+              nextmap[x][y] = new GammaRay()
+              this.life += 1;
+              this.temp = 500 - this.life;
+              tries = 0;
+              this.updated = true;
+              return nextmap;
+      
             }
             this.xr = Math.round(((Math.random()) * 2) - 1);
             this.yr = Math.round(((Math.random()) * 2) - 1);
@@ -479,7 +486,7 @@ class Moss {
     this.cond = 0.2;
     this.updated = false;
     this.solid = true;
-    this.type = "moss";
+    this.type = "Moss";
     this.mass = 3;
     this.water = 5;
     var multval = 55;
@@ -496,15 +503,15 @@ class Moss {
     if (this.temp >= 5) {
       nextmap[x][y] = new DeadMoss();
     } else {
-      if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.9)) {
+      if (((other != undefined) && ((other.type == "Water")) && Math.random() >= 0.9)) {
         this.water += 1;
         if (this.water >= 5) {
           nextmap[x + xr][y + yr] = new Moss();
         }
 
-      } else if (other.type == "fungus") {
+      } else if (other.type == "Fungus") {
         nextmap[x + xr][y + yr] = new Moss();
-      } else if (other.type == "moss") {
+      } else if (other.type == "Moss") {
         other.water += this.water / 10;
         this.water -= this.water / 10;
       }
@@ -525,7 +532,7 @@ class DeadMoss {
     this.cond = 0.5;
     this.updated = false;
     this.solid = true;
-    this.type = "moss";
+    this.type = "Moss";
     this.mass = 3;
     this.water = 0;
     var multval = 55;
@@ -544,7 +551,7 @@ class DeadMoss {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if (((other != undefined) && ((other.type == "water")) && Math.random() >= 0.5)) {
+      if (((other != undefined) && ((other.type == "Water")) && Math.random() >= 0.5)) {
 
         nextmap[x][y] = new Moss();
 
@@ -563,7 +570,7 @@ class Stone {
     this.cond = 0.8;
     this.updated = false;
     this.solid = true;
-    this.type = "stone";
+    this.type = "Stone";
     this.mass = 10;
     var multval = 20;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -596,7 +603,7 @@ class Titanium {
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "titanium";
+    this.type = "Titanium";
     this.mass = 100;
     var multval = 10;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -621,7 +628,7 @@ class Insulator {
     this.cond = 0;
     this.updated = false;
     this.solid = true;
-    this.type = "insulator";
+    this.type = "Insulator";
     this.mass = 1;
     var multval = 30;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -642,7 +649,7 @@ class Filter {
     this.cond = 0;
     this.updated = false;
     this.solid = true;
-    this.type = "filter";
+    this.type = "Filter";
     this.mass = 100;
     var multval = 5;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -699,13 +706,49 @@ class ColdBlock {
   }
 }
 
+class Spawner {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Spawner";
+    this.mass = 100;
+    var multval = 50;
+    this.spawns = "Air";
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + this.colormult);
+    this.g = Math.abs(0 + this.colormult);
+    this.b = Math.abs(200 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    while (xr != 0 && yr != 0) {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+    }
+
+    if (this.spawns == "Air" || this.spawns == "Spawner") {
+      this.spawns = nextmap[xr + x][yr + y].type;
+    } else {
+      if(nextmap[xr + x][yr + y].type != "Spawner")
+      eval("nextmap[x + xr][y + yr] = new " + this.spawns + "();")
+    }
+
+    this.r = (Math.sin(x) + Math.sin(y)) * 50 + this.colormult * 2;
+    this.updated = true;
+    return nextmap;
+
+  }
+}
+
 class Wood {
   constructor() {
     this.temp = 1;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
-    this.type = "wood";
+    this.type = "Wood";
     this.mass = 10;
     var multval = 10;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -728,7 +771,7 @@ class Ice {
     this.cond = 0.7;
     this.updated = false;
     this.solid = true;
-    this.type = "ice";
+    this.type = "Ice";
     this.mass = 10;
     var multval = 20;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -751,7 +794,7 @@ class Water {
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "water";
+    this.type = "Water";
     this.mass = 1;
     this.falling = false;
     var multval = 55;
@@ -796,7 +839,7 @@ class Gasoline {
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "gasoline";
+    this.type = "Gasoline";
     this.mass = 1;
     this.falling = false;
     var multval = 55;
@@ -837,7 +880,7 @@ class Steam {
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "steam";
+    this.type = "Steam";
     this.mass = -1;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -875,7 +918,7 @@ class Smoke {
     this.cond = 0.5;
     this.updated = false;
     this.solid = false;
-    this.type = "smoke";
+    this.type = "Smoke";
     this.mass = -0.5;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -917,7 +960,7 @@ class Lava {
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
-    this.type = "lava";
+    this.type = "Lava";
     this.mass = 5;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -958,8 +1001,9 @@ class Acid {
     this.cond = 0.2;
     this.updated = false;
     this.solid = false;
-    this.type = "acid";
+    this.type = "Acid";
     this.mass = 1;
+    this.blist = ["Acid", "Air", "Titanium", "Insulator", "Spawner"]
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(50 + colormult);
@@ -986,7 +1030,7 @@ class Acid {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
 
-    if (nextmap[x + xr][y + yr] != undefined && nextmap[x + xr][y + yr].type != "acid" && nextmap[x + xr][y + yr].type != "air" && nextmap[x + xr][y + yr].type != "titanium" && nextmap[x + xr][y + yr].type != "insulator") {
+    if (nextmap[x + xr][y + yr] != undefined && (this.blist.includes(nextmap[x + xr][y + yr].type) == false)) {
       if (Math.random() > 0.9) {
       nextmap[x + xr][y + yr] = new Smoke()
         if (Math.random() > 0.3) {
