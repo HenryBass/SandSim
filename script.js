@@ -44,7 +44,7 @@ class Air {
     this.b = Math.abs(210 + colormult);
   }
   update(x, y, map, self, nextmap) {
-
+    
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
@@ -154,7 +154,39 @@ class Dirt {
         nextmap[x][y] = new Moss();
       }
     } else {
-      nextmap[x][y] = new Smoke();
+      if (Math.random <= 0.5) {
+        nextmap[x][y] = new Smoke();
+      } else {
+        nextmap[x][y] = new Ash();
+      }
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Ash {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0.1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Ash";
+    this.mass = 0.1;
+    var multval = 100;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(100 + colormult);
+    this.g = Math.abs(100 + colormult);
+    this.b = Math.abs(100 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var below = nextmap[x + xr][y + 1];
+
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x + xr][y + 1] = self;
+      nextmap[x][y] = below;
     }
 
     this.updated = true;
@@ -227,7 +259,7 @@ class Fungus {
 
 class Fire {
   constructor() {
-    this.temp = 15;
+    this.temp = 25;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
@@ -719,7 +751,7 @@ class Spawner {
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(50 + this.colormult);
     this.g = Math.abs(0 + this.colormult);
-    this.b = Math.abs(200 + this.colormult);
+    this.b = Math.abs(150 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
 
@@ -758,7 +790,11 @@ class Wood {
   }
   update(x, y, map, self, nextmap) {
     if (this.temp > 6) {
-      nextmap[x][y] = new Fire();
+      if (Math.random() >= 0.2) {
+        nextmap[x][y] = new Fire();
+      } else {
+        nextmap[x][y] = new Ash();
+      }
     }
     this.updated = true;
     return nextmap;
@@ -849,8 +885,9 @@ class Gasoline {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 4) {
+    if (this.temp > 6) {
       nextmap[x][y] = new Fire();
+      nextmap[x][y].temp += 7;
     } else {
       var below = nextmap[x][y + 1];
       if (((below != undefined) && (below.mass < self.mass) && (below.solid != true))) {
@@ -884,13 +921,107 @@ class Steam {
     this.mass = -1;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(100 + colormult);
-    this.g = Math.abs(100 + colormult);
+    this.r = Math.abs(150 + colormult);
+    this.g = Math.abs(150 + colormult);
     this.b = Math.abs(200 + colormult);
   }
   update(x, y, map, self, nextmap) {
 
     if (self.temp >= 8) {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var below = nextmap[x][y - 1];
+
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+         nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
+        var nextpos = nextmap[x + xr][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + xr][y] = self;
+          nextmap[x][y] = nextpos;
+        }
+      }
+    } else {
+      nextmap[x][y] = new Water();
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Hydrogen {
+  constructor() {
+    this.temp = 0;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Hydrogen";
+    this.mass = -1.5;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(150 + colormult);
+    this.g = Math.abs(170 + colormult);
+    this.b = Math.abs(170 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+
+    if (nextmap[x + xr][y + yr].type == "Oxegen") {
+      if (Math.random() > 0.5) {
+        nextmap[x][y] = new Water();
+      } else {
+        nextmap[x + xr][y + yr] = new Water();
+        nextmap[x + xr][y + yr].temp += 7;
+      }
+      
+      this.updated = true;
+      return nextmap;
+    }
+
+    if (self.temp <= 10) {
+      var below = nextmap[x][y - 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+         nextmap[x][y - 1] = self;
+        nextmap[x][y] = below;
+      } else {
+        var nextpos = nextmap[x + xr][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + xr][y] = self;
+          nextmap[x][y] = nextpos;
+        }
+      }
+    } else {
+      nextmap[x][y] = new Fire();
+      nextmap[x][y].temp += 20;
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Oxegen {
+  constructor() {
+    this.temp = 0;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Oxegen";
+    this.mass = -1.2;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(120 + colormult);
+    this.g = Math.abs(170 + colormult);
+    this.b = Math.abs(200 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+
+    
       var xr = Math.round((Math.random() * 2) - 1);
       var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
@@ -903,9 +1034,7 @@ class Steam {
           nextmap[x][y] = nextpos;
         }
       }
-    } else {
-      nextmap[x][y] = new Water();
-    }
+    
 
     this.updated = true;
     return nextmap;
@@ -929,12 +1058,11 @@ class Smoke {
   update(x, y, map, self, nextmap) {
 
     if (Math.random() >= 0.25) {
-
+      
 
       var below = nextmap[x][y + 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-        nextmap[x][y - 1] = self;
-        nextmap[x][y] = below;
+
       } else {
 
         var r = Math.round((Math.random() * 2) - 1);
@@ -948,7 +1076,7 @@ class Smoke {
     } else {
       nextmap[x][y] = new Air();
     }
-
+    
     this.updated = true;
     return nextmap;
   }
