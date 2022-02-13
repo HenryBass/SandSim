@@ -952,6 +952,54 @@ class Lava {
   }
 }
 
+class Acid {
+  constructor() {
+    this.temp = 7;
+    this.cond = 0.2;
+    this.updated = false;
+    this.solid = false;
+    this.type = "acid";
+    this.mass = 1;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + colormult);
+    this.g = Math.abs(200 + colormult);
+    this.b = Math.abs(150 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
+
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + r][y] = self;
+          nextmap[x][y] = nextpos;
+        }
+      }
+      
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+
+    if (nextmap[x + xr][y + yr] != undefined && nextmap[x + xr][y + yr].type != "acid" && nextmap[x + xr][y + yr].type != "air" && nextmap[x + xr][y + yr].type != "titanium" && nextmap[x + xr][y + yr].type != "insulator") {
+      if (Math.random() > 0.9) {
+      nextmap[x + xr][y + yr] = new Smoke()
+        if (Math.random() > 0.3) {
+          nextmap[x][y] = new Smoke()
+        }
+      }
+    }
+    
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 function setup() {
 
   window.requestAnimationFrame(draw);
