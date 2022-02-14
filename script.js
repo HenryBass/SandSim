@@ -1214,7 +1214,7 @@ function setup() {
     screen = parseInt(document.cookie);
     document.getElementById("screen").value = screen;
   } else {
-    var screen = 127;
+    var screen = 64;
     document.getElementById("screen").value = screen;
     document.cookie = screen;
   }
