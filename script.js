@@ -654,6 +654,48 @@ class Titanium {
   }
 }
 
+class Wire {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Wire";
+    this.mass = 100;
+    var multval = 10;
+    this.others = 0;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(120 + this.colormult);
+    this.g = Math.abs(120 + this.colormult);
+    this.b = Math.abs(120 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    try {
+  for(var xo = -1; xo < 2; xo ++) {
+    for(var yo = -1; yo < 2; yo ++) {
+
+    if (nextmap[x + xo][y + yo].type == "Water") {
+      this.others += 1;
+    }
+    if (this.others == 2) {
+      this.others = 0;
+      nextmap[x][y] = new Water();
+      this.updated = true;
+      return nextmap;
+    }
+
+    }
+  }
+
+    } catch(error) {
+      console.log(error.message)
+    }
+    this.others = 0;
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Copper {
   constructor() {
     this.temp = 1;
@@ -676,7 +718,7 @@ class Copper {
     if (nextmap[xr + x][yr + y].type == "Air" && Math.random() > 0.99) {
       this.ox += 1;
     }
-    if (nextmap[xr + x][yr + y].type == "Oxegen") {
+    if (nextmap[xr + x][yr + y].type == "Oxygen") {
       this.ox += 1;
     }
     if (nextmap[xr + x][yr + y].type == "Copper" && nextmap[xr + x][yr + y].ox >= 10 && Math.random() < this.oxchance && this.ox < 10) {
@@ -999,7 +1041,7 @@ class Hydrogen {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
 
-    if (nextmap[x + xr][y + yr].type == "Oxegen") {
+    if (nextmap[x + xr][y + yr].type == "Oxygen") {
       if (Math.random() > 0.5) {
         nextmap[x][y] = new Water();
       } else {
@@ -1034,13 +1076,13 @@ class Hydrogen {
   }
 }
 
-class Oxegen {
+class Oxygen {
   constructor() {
     this.temp = 0;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
-    this.type = "Oxegen";
+    this.type = "Oxygen";
     this.mass = -1.2;
     var multval = 55;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
