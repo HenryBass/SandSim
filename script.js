@@ -154,7 +154,7 @@ class Dirt {
         nextmap[x][y] = new Moss();
       }
     } else {
-      if (Math.random <= 0.5) {
+      if (Math.random <= 0.9) {
         nextmap[x][y] = new Smoke();
       } else {
         nextmap[x][y] = new Ash();
@@ -168,7 +168,7 @@ class Dirt {
 
 class Ash {
   constructor() {
-    this.temp = 1;
+    this.temp = 5;
     this.cond = 0.1;
     this.updated = false;
     this.solid = false;
@@ -184,7 +184,7 @@ class Ash {
     var xr = Math.round((Math.random() * 2) - 1);
     var below = nextmap[x + xr][y + 1];
 
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+    if ((below != undefined) && (below.mass <= 0.5) && (below.solid != true)) {
       nextmap[x + xr][y + 1] = self;
       nextmap[x][y] = below;
     }
