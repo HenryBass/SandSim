@@ -1004,8 +1004,7 @@ class Steam {
       var below = nextmap[x][y - 1];
 
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-         nextmap[x][y + 1] = self;
-        nextmap[x][y] = below;
+
       } else {
         var nextpos = nextmap[x + xr][y];
         var defined = (nextpos != undefined)
@@ -1044,6 +1043,7 @@ class Hydrogen {
     if (nextmap[x + xr][y + yr].type == "Oxygen") {
       if (Math.random() > 0.5) {
         nextmap[x][y] = new Water();
+        nextmap[x][y].temp += 7;
       } else {
         nextmap[x + xr][y + yr] = new Water();
         nextmap[x + xr][y + yr].temp += 7;
@@ -1053,7 +1053,7 @@ class Hydrogen {
       return nextmap;
     }
 
-    if (self.temp <= 10) {
+    else if (self.temp <= 10) {
       var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
          nextmap[x][y - 1] = self;
