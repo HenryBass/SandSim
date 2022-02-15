@@ -473,8 +473,10 @@ class GammaRay {
         if ((other != undefined) && other.type == "Air") {
           nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
 
-          if(Math.random() < 0.9) {
+          if(Math.random() < 0.96) {
             nextmap[x][y] = new Air()
+          } else {
+            nextmap[x][y] = new GammaRay();
           }
         } else {
           var tries = 0;
