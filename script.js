@@ -5,6 +5,12 @@ c.addEventListener("mousemove", function (e) {
   getMousePosition(c, e);
 });
 
+c.addEventListener("mouseout", function (e) {
+  getMousePosition(c, e);
+});
+
+
+c.style.cursor = "crosshair";
 
 var mouseX = 1;
 var mouseY = 1;
@@ -228,7 +234,7 @@ class Snow {
 
 class Fungus {
   constructor() {
-    this.temp = 5;
+    this.temp = 1;
     this.cond = 1;
     this.updated = false;
     this.solid = true;
@@ -241,7 +247,7 @@ class Fungus {
     this.b = Math.abs(100 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 7) {
+    if (this.temp > 1.5) {
       nextmap[x][y] = new Dirt();
     } else {
       var xr = Math.round((Math.random() * 2) - 1);
@@ -670,7 +676,7 @@ class Head {
     this.type = "Head";
     this.mass = 100;
     this.colormult = 0;
-    this.life = 10;
+    this.life = 20;
     this.r = Math.abs(220 + this.colormult);
     this.g = Math.abs(200 + this.colormult);
     this.b = Math.abs(0 + this.colormult);
@@ -680,7 +686,6 @@ class Head {
       nextmap[x][y] = new Tail();
       
     }
-
     this.life -= 1;
 
     return nextmap;
@@ -696,7 +701,7 @@ class Tail {
     this.type = "Tail";
     this.mass = 100;
     this.colormult = 0;
-    this.life = 10;
+    this.life = 20;
     this.r = Math.abs(0 + this.colormult);
     this.g = Math.abs(0 + this.colormult);
     this.b = Math.abs(150 + this.colormult);
@@ -748,6 +753,7 @@ class Wire {
     if (this.others == 2 || this.others == 1) {
       nextmap[x][y] = new Head();
       nextmap[x][y].updated = true;
+      console.log(this.others)
     } else if (this.others > 2){
       nextmap[x][y] = new Wire();
     }
@@ -1115,20 +1121,9 @@ class Hydrogen {
       
       this.updated = true;
       return nextmap;
-    } else if (nextmap[x + xr][y + yr].type == "Air" && Math.random() >= 0.95) {
-      if (Math.random() > 0.5) {
-        nextmap[x][y] = new Water();
-        nextmap[x][y].temp += 7;
-      } else {
-        nextmap[x + xr][y + yr] = new Water();
-        nextmap[x + xr][y + yr].temp += 7;
-      }
-      
-      this.updated = true;
-      return nextmap;
     }
 
-    else if (self.temp <= 10) {
+    else if (self.temp <= 12) {
       var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
          nextmap[x][y - 1] = self;
@@ -1425,6 +1420,17 @@ function draw() {
   }
   x = 0;
   y = 0;
+
+if(true) {
+
+  if(mouseIsPressed) {
+    ctx.fillStyle = "rgb(200, 0, 0)";
+  } else {
+    ctx.fillStyle = "rgb(0, 0, 0)";
+  }
+  ctx.fillRect(Math.round(mouseX/scalex) * scalex, Math.round(mouseY/scalex) * scalex, scalex, scaley);
+  
+}
 
 
   if (mouseIsPressed) {
