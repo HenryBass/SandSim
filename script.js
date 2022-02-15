@@ -51,7 +51,7 @@ class Air {
     this.b = Math.abs(210 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    
+
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
@@ -384,26 +384,26 @@ class Quarks {
 
   update(x, y, map, self, nextmap) {
 
-    if(Math.random() > 0.99) {
+    if (Math.random() > 0.99) {
       nextmap[x][y] = new Smoke();
     } else {
 
-    var xr = Math.round((Math.random() * 8) - 4);
-    var yr = Math.round((Math.random() * 8) - 4);
+      var xr = Math.round((Math.random() * 8) - 4);
+      var yr = Math.round((Math.random() * 8) - 4);
 
-    var other = nextmap[x + xr][y + yr];
+      var other = nextmap[x + xr][y + yr];
 
-    if ((other != undefined) && (other.type == "Air")) {
+      if ((other != undefined) && (other.type == "Air")) {
 
-      nextmap[x + xr][y + yr] = nextmap[x][y];
-      nextmap[x][y] = new Air();
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = new Air();
 
+      }
+      this.temp = 25;
     }
-    this.temp = 25;
-    }
 
-  this.updated = true;
-  return nextmap;
+    this.updated = true;
+    return nextmap;
 
   }
 
@@ -480,7 +480,7 @@ class GammaRay {
         if ((other != undefined) && other.type == "Air") {
           nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
 
-          if(Math.random() < 0.96) {
+          if (Math.random() < 0.96) {
             nextmap[x][y] = new Air()
           } else {
             nextmap[x][y] = new GammaRay();
@@ -498,7 +498,7 @@ class GammaRay {
               tries = 0;
               this.updated = true;
               return nextmap;
-      
+
             }
             this.xr = Math.round(((Math.random()) * 2) - 1);
             this.yr = Math.round(((Math.random()) * 2) - 1);
@@ -563,7 +563,7 @@ class Moss {
       }
       this.water -= 0.05 * Math.random();
       if (this.water <= 0) {
-        nextmap[x][y] = new DeadMoss();
+        nextmap[x + xr][y + yr] = new DeadMoss();
       }
     }
     this.b = this.water * 20;
@@ -597,9 +597,12 @@ class DeadMoss {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
-      if (((other != undefined) && ((other.type == "Water")) && Math.random() >= 0.5)) {
-
-        nextmap[x][y] = new Moss();
+      if (((other != undefined) && Math.random() >= 0.5)) {
+        if (other.type == "Gasoline") {
+          nextmap[x][y] = new Dirt();
+        } else if (other.type == "Water") {
+          nextmap[x][y] = new Moss();
+        }
 
       }
 
@@ -677,18 +680,17 @@ class Head {
     this.type = "Head";
     this.mass = 100;
     this.colormult = 0;
-    this.life = 20;
+    this.dead = false;
     this.r = Math.abs(220 + this.colormult);
     this.g = Math.abs(200 + this.colormult);
     this.b = Math.abs(0 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if(this.life <= 0) {
+    if (this.dead) {
       nextmap[x][y] = new Tail();
-      
     }
-    this.life -= 1;
-
+    this.dead = true;
+    //this.updated = true;
     return nextmap;
   }
 }
@@ -702,19 +704,18 @@ class Tail {
     this.type = "Tail";
     this.mass = 100;
     this.colormult = 0;
-    this.life = 20;
+    this.dead = false;
     this.r = Math.abs(0 + this.colormult);
     this.g = Math.abs(0 + this.colormult);
     this.b = Math.abs(150 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if(this.life <= 0) {
+    if (this.dead) {
       nextmap[x][y] = new Wire();
 
     }
-
-    this.life -= 1;
-
+    this.dead = true;
+    //this.updated = true;
     return nextmap;
   }
 }
@@ -727,6 +728,7 @@ class Wire {
     this.solid = true;
     this.type = "Wire";
     this.mass = 100;
+    this.dead = false;
     var multval = 10;
     this.others = 0;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
@@ -735,33 +737,34 @@ class Wire {
     this.b = Math.abs(120 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    
-  for(var xo = -1; xo < 2; xo ++) {
+    this.others = 0;
+    if (this.dead != true) {
+    for (var xo = -1; xo < 2; xo++) {
 
-    for(var yo = -1; yo < 2; yo ++) {
+      for (var yo = -1; yo < 2; yo++) {
+        try {
 
-      if (nextmap[x + xo][y + yo].type == "Head"  && this.others < 2 && nextmap[x + xo][y + yo].life == 0) {
+          if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
+            this.others += 1;
+          }
 
-        if (nextmap[x + xo][y + yo].updated == false) {
-        this.others += 1;
-        nextmap[x + xo][y + yo].life = 0;
-      } else {
-        nextmap[x + xo][y + yo].updated = false;
+        } catch {
+          0;
+        }
+
+
       }
-    
     }
-
     if (this.others == 2 || this.others == 1) {
       nextmap[x][y] = new Head();
       nextmap[x][y].updated = true;
+    } else if (this.others > 2) {
       console.log(this.others)
-    } else if (this.others > 2){
       nextmap[x][y] = new Wire();
+      nextmap[x][y].dead = true;
     }
     }
-  }
-
-    this.others = 0;
+    this.dead = false;
     this.updated = true;
     return nextmap;
   }
@@ -812,7 +815,7 @@ class Copper {
 
     if (this.ox > 15) {
       this.ox = 15;
-  }
+    }
     this.updated = true;
     return nextmap;
   }
@@ -906,8 +909,8 @@ class Spawner {
     if (this.spawns == "Air" || this.spawns == "Spawner") {
       this.spawns = nextmap[xr + x][yr + y].type;
     } else {
-      if(nextmap[xr + x][yr + y].type != "Spawner")
-      eval("nextmap[x + xr][y + yr] = new " + this.spawns + "();")
+      if (nextmap[xr + x][yr + y].type != "Spawner")
+        eval("nextmap[x + xr][y + yr] = new " + this.spawns + "();")
     }
 
     this.r = (Math.sin(x) + Math.sin(y)) * 50 + this.colormult * 2;
@@ -1119,7 +1122,7 @@ class Hydrogen {
         nextmap[x + xr][y + yr] = new Water();
         nextmap[x + xr][y + yr].temp += 7;
       }
-      
+
       this.updated = true;
       return nextmap;
     }
@@ -1127,7 +1130,7 @@ class Hydrogen {
     else if (self.temp <= 12) {
       var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-         nextmap[x][y - 1] = self;
+        nextmap[x][y - 1] = self;
         nextmap[x][y] = below;
       } else {
         var nextpos = nextmap[x + xr][y];
@@ -1164,20 +1167,20 @@ class Oxygen {
   update(x, y, map, self, nextmap) {
 
 
-    
-      var xr = Math.round((Math.random() * 2) - 1);
-      var below = nextmap[x][y - 1];
-      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
 
-      } else {
-        var nextpos = nextmap[x + xr][y];
-        var defined = (nextpos != undefined)
-        if ((defined) && (nextpos.solid == false)) {
-          nextmap[x + xr][y] = self;
-          nextmap[x][y] = nextpos;
-        }
+    var xr = Math.round((Math.random() * 2) - 1);
+    var below = nextmap[x][y - 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+
+    } else {
+      var nextpos = nextmap[x + xr][y];
+      var defined = (nextpos != undefined)
+      if ((defined) && (nextpos.solid == false)) {
+        nextmap[x + xr][y] = self;
+        nextmap[x][y] = nextpos;
       }
-    
+    }
+
 
     this.updated = true;
     return nextmap;
@@ -1201,7 +1204,7 @@ class Smoke {
   update(x, y, map, self, nextmap) {
 
     if (Math.random() >= 0.25) {
-      
+
 
       var below = nextmap[x][y + 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
@@ -1219,7 +1222,7 @@ class Smoke {
     } else {
       nextmap[x][y] = new Air();
     }
-    
+
     this.updated = true;
     return nextmap;
   }
@@ -1283,33 +1286,33 @@ class Acid {
   }
   update(x, y, map, self, nextmap) {
 
-      var below = nextmap[x][y + 1];
-      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
-        nextmap[x][y + 1] = self;
-        nextmap[x][y] = below;
-      } else {
+    var below = nextmap[x][y + 1];
+    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      nextmap[x][y + 1] = self;
+      nextmap[x][y] = below;
+    } else {
 
-        var r = Math.round((Math.random() * 2) - 1);
-        var nextpos = nextmap[x + r][y];
-        var defined = (nextpos != undefined)
-        if ((defined) && (nextpos.solid == false)) {
-          nextmap[x + r][y] = self;
-          nextmap[x][y] = nextpos;
-        }
+      var r = Math.round((Math.random() * 2) - 1);
+      var nextpos = nextmap[x + r][y];
+      var defined = (nextpos != undefined)
+      if ((defined) && (nextpos.solid == false)) {
+        nextmap[x + r][y] = self;
+        nextmap[x][y] = nextpos;
       }
-      
+    }
+
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
 
     if (nextmap[x + xr][y + yr] != undefined && (this.blist.includes(nextmap[x + xr][y + yr].type) == false)) {
       if (Math.random() > 0.9) {
-      nextmap[x + xr][y + yr] = new Smoke()
+        nextmap[x + xr][y + yr] = new Smoke()
         if (Math.random() > 0.3) {
           nextmap[x][y] = new Smoke()
         }
       }
     }
-    
+
     this.updated = true;
     return nextmap;
   }
@@ -1422,16 +1425,16 @@ function draw() {
   x = 0;
   y = 0;
 
-if(true) {
+  if (true) {
 
-  if(mouseIsPressed) {
-    ctx.fillStyle = "rgb(200, 0, 0)";
-  } else {
-    ctx.fillStyle = "rgb(0, 0, 0)";
+    if (mouseIsPressed) {
+      ctx.fillStyle = "rgb(200, 0, 0)";
+    } else {
+      ctx.fillStyle = "rgb(0, 0, 0)";
+    }
+    ctx.fillRect(Math.round(mouseX / scalex) * scalex, Math.round(mouseY / scalex) * scalex, scalex, scaley);
+
   }
-  ctx.fillRect(Math.round(mouseX/scalex) * scalex, Math.round(mouseY/scalex) * scalex, scalex, scaley);
-  
-}
 
 
   if (mouseIsPressed) {
