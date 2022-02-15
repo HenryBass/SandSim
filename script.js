@@ -472,7 +472,10 @@ class GammaRay {
         var other = nextmap[x + this.xr][y + this.yr];
         if ((other != undefined) && other.type == "Air") {
           nextmap[x + this.xr][y + this.yr] = nextmap[x][y];
-          nextmap[x][y] = new Air()
+
+          if(Math.random() < 0.9) {
+            nextmap[x][y] = new Air()
+          }
         } else {
           var tries = 0;
           while (((nextmap[x + this.xr][y + this.yr] != undefined) && (nextmap[x + this.xr][y + this.yr].type != "Air")) && (nextmap[x + this.xr][y + this.yr].type != "GammaRay")) {
@@ -543,6 +546,8 @@ class Moss {
 
       } else if (other.type == "Fungus") {
         nextmap[x + xr][y + yr] = new Moss();
+      } else if (other.type == "Gasoline") {
+        nextmap[x + xr][y + yr] = new Dirt();
       } else if (other.type == "Moss") {
         other.water += this.water / 10;
         this.water -= this.water / 10;
@@ -654,6 +659,58 @@ class Titanium {
   }
 }
 
+class Head {
+  constructor() {
+    this.temp = 20;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Head";
+    this.mass = 100;
+    this.colormult = 0;
+    this.life = 10;
+    this.r = Math.abs(220 + this.colormult);
+    this.g = Math.abs(200 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if(this.life <= 0) {
+      nextmap[x][y] = new Tail();
+      
+    }
+
+    this.life -= 1;
+
+    return nextmap;
+  }
+}
+
+class Tail {
+  constructor() {
+    this.temp = 20;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Tail";
+    this.mass = 100;
+    this.colormult = 0;
+    this.life = 10;
+    this.r = Math.abs(0 + this.colormult);
+    this.g = Math.abs(0 + this.colormult);
+    this.b = Math.abs(150 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if(this.life <= 0) {
+      nextmap[x][y] = new Wire();
+
+    }
+
+    this.life -= 1;
+
+    return nextmap;
+  }
+}
+
 class Wire {
   constructor() {
     this.temp = 1;
@@ -670,26 +727,31 @@ class Wire {
     this.b = Math.abs(120 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    try {
+    
   for(var xo = -1; xo < 2; xo ++) {
+
     for(var yo = -1; yo < 2; yo ++) {
 
-    if (nextmap[x + xo][y + yo].type == "Water") {
-      this.others += 1;
-    }
-    if (this.others == 2) {
-      this.others = 0;
-      nextmap[x][y] = new Water();
-      this.updated = true;
-      return nextmap;
+      if (nextmap[x + xo][y + yo].type == "Head"  && this.others < 2 && nextmap[x + xo][y + yo].life == 0) {
+
+        if (nextmap[x + xo][y + yo].updated == false) {
+        this.others += 1;
+        nextmap[x + xo][y + yo].life = 0;
+      } else {
+        nextmap[x + xo][y + yo].updated = false;
+      }
+    
     }
 
+    if (this.others == 2 || this.others == 1) {
+      nextmap[x][y] = new Head();
+      nextmap[x][y].updated = true;
+    } else if (this.others > 2){
+      nextmap[x][y] = new Wire();
+    }
     }
   }
 
-    } catch(error) {
-      console.log(error.message)
-    }
     this.others = 0;
     this.updated = true;
     return nextmap;
@@ -957,9 +1019,9 @@ class Gasoline {
     this.b = Math.abs(50 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp > 6) {
+    if (this.temp > 8) {
       nextmap[x][y] = new Fire();
-      nextmap[x][y].temp += 7;
+      nextmap[x][y].temp += 10;
     } else {
       var below = nextmap[x][y + 1];
       if (((below != undefined) && (below.mass < self.mass) && (below.solid != true))) {
@@ -1041,6 +1103,17 @@ class Hydrogen {
     var yr = Math.round((Math.random() * 2) - 1);
 
     if (nextmap[x + xr][y + yr].type == "Oxygen") {
+      if (Math.random() > 0.5) {
+        nextmap[x][y] = new Water();
+        nextmap[x][y].temp += 7;
+      } else {
+        nextmap[x + xr][y + yr] = new Water();
+        nextmap[x + xr][y + yr].temp += 7;
+      }
+      
+      this.updated = true;
+      return nextmap;
+    } else if (nextmap[x + xr][y + yr].type == "Air" && Math.random() >= 0.95) {
       if (Math.random() > 0.5) {
         nextmap[x][y] = new Water();
         nextmap[x][y].temp += 7;
