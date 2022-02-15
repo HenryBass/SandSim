@@ -6,11 +6,12 @@ c.addEventListener("mousemove", function (e) {
 });
 
 c.addEventListener("mouseout", function (e) {
-  getMousePosition(c, e);
+  mouseX = undefined;
+  mouseY = undefined;
 });
 
 
-c.style.cursor = "crosshair";
+c.style.cursor = "none";
 
 var mouseX = 1;
 var mouseY = 1;
