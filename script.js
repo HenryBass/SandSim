@@ -715,7 +715,7 @@ class Tail {
 
     }
     this.dead = true;
-    //this.updated = true;
+
     return nextmap;
   }
 }
@@ -739,13 +739,63 @@ class Wire {
   update(x, y, map, self, nextmap) {
     this.others = 0;
     if (this.dead != true) {
+      for (var xo = -1; xo < 2; xo++) {
+
+        for (var yo = -1; yo < 2; yo++) {
+          try {
+
+            if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
+              this.others += 1;
+            }
+
+          } catch {
+            0;
+          }
+
+
+        }
+      }
+      if (this.others == 2 || this.others == 1) {
+        nextmap[x][y] = new Head();
+        nextmap[x][y].updated = true;
+      } else if (this.others > 2) {
+        nextmap[x][y] = new Wire();
+        nextmap[x][y].dead = true;
+      }
+    }
+    this.dead = false;
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class RLED {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "RLED";
+    this.mass = 100;
+    var multval = 10;
+    this.others = 0;
+    this.pow = 0;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(80 + this.colormult);
+    this.g = Math.abs(20 + this.colormult);
+    this.b = Math.abs(20 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
     for (var xo = -1; xo < 2; xo++) {
 
       for (var yo = -1; yo < 2; yo++) {
         try {
 
           if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
-            this.others += 1;
+            if (this.pow + 50 < 250) {
+              this.pow += 20;
+            }
           }
 
         } catch {
@@ -755,16 +805,12 @@ class Wire {
 
       }
     }
-    if (this.others == 2 || this.others == 1) {
-      nextmap[x][y] = new Head();
-      nextmap[x][y].updated = true;
-    } else if (this.others > 2) {
-      console.log(this.others)
-      nextmap[x][y] = new Wire();
-      nextmap[x][y].dead = true;
+    if (this.pow < 0) {
+      this.pow = 0;
     }
-    }
-    this.dead = false;
+
+    this.r = Math.abs(80 + this.colormult + this.pow)
+    this.pow -= 5;
     this.updated = true;
     return nextmap;
   }
@@ -892,8 +938,57 @@ class Spawner {
     this.solid = true;
     this.type = "Spawner";
     this.mass = 100;
+    this.pow = 0;
     var multval = 50;
     this.spawns = "Air";
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(50 + this.colormult);
+    this.g = Math.abs(0 + this.colormult);
+    this.b = Math.abs(150 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+
+    for (var xo = -1; xo < 2; xo++) {
+
+      for (var yo = -1; yo < 2; yo++) {
+
+          if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false && this.pow + 20 <= 250) {
+              this.pow += 100;
+          }
+
+      }
+    }
+
+    while (xr != 0 && yr != 0) {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+    }
+
+    if (this.spawns == "Air" || this.spawns == "Spawner" || this.spawns == "Wire" || this.spawns == "Head"|| this.spawns == "Tail") {
+      this.spawns = nextmap[xr + x][yr + y].type;
+    } else {
+      if (nextmap[xr + x][yr + y].type != "Spawner" && nextmap[xr + x][yr + y].type != "Wire" && nextmap[xr + x][yr + y].type != "Head" && nextmap[xr + x][yr + y].type != "Tail" && this.pow > 5) {
+        eval("nextmap[x + xr][y + yr] = new " + this.spawns + "();")
+      }
+    }
+
+    this.r = this.pow + this.colormult;
+    this.pow -= 5;
+    this.updated = true;
+    return nextmap;
+
+  }
+}
+
+class Generator {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Generator";
+    this.mass = 100;
+    var multval = 50;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(50 + this.colormult);
     this.g = Math.abs(0 + this.colormult);
@@ -906,14 +1001,12 @@ class Spawner {
       var yr = Math.round((Math.random() * 2) - 1);
     }
 
-    if (this.spawns == "Air" || this.spawns == "Spawner") {
-      this.spawns = nextmap[xr + x][yr + y].type;
-    } else {
-      if (nextmap[xr + x][yr + y].type != "Spawner")
-        eval("nextmap[x + xr][y + yr] = new " + this.spawns + "();")
+    if (nextmap[xr + x][yr + y].type != "Generator") {
+      if (Math.random() < this.temp / 100) {
+        nextmap[x + xr][y + yr] = new Head();
+      }
     }
 
-    this.r = (Math.sin(x) + Math.sin(y)) * 50 + this.colormult * 2;
     this.updated = true;
     return nextmap;
 
