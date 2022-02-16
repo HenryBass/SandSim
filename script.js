@@ -412,7 +412,7 @@ class Quarks {
 class Uranium {
   constructor() {
     this.temp = 1;
-    this.cond = 0.8;
+    this.cond = 1;
     this.updated = false;
     this.solid = false;
     this.type = "Uranium";
@@ -736,9 +736,6 @@ class Wire {
     this.b = Math.abs(120 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    this.others = 0;
-    var xr = Math.round((Math.random() * 2) - 1);
-    var yr = Math.round((Math.random() * 2) - 1);
     if (this.dead != true) {
       for (var xo = -1; xo < 2; xo++) {
 
@@ -794,7 +791,7 @@ class RLED {
         try {
 
           if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
-            if (this.pow + 50 < 250) {
+            if (this.pow + 20 < 250) {
               this.pow += 20;
             }
           }
@@ -851,13 +848,13 @@ class Copper {
       nextmap[x][y] = new Lava();
     }
     if (this.temp > 0) {
-      this.r = 185 - (this.temp * 5) + this.colormult - this.ox * 5;
+      this.r = 185 + (this.temp * 5) + this.colormult + this.ox * 5;
       this.g = 95 + (this.temp * 5) + this.colormult + this.ox * 3;
-      this.b = 0 + (this.temp * 5) + this.colormult + this.ox * 5;
+      this.b = 0 - (this.temp * 5) + this.colormult - this.ox * 5;
     } else {
-      this.r = 185 - this.colormult - this.ox * 5;
+      this.r = 185 + this.colormult + this.ox * 5;
       this.g = 95 + this.colormult + this.ox * 3;
-      this.b = 0 + this.colormult + this.ox * 5;
+      this.b = 0 - this.colormult - this.ox * 5;
     }
 
     if (this.ox > 15) {
@@ -898,13 +895,39 @@ class HeatBlock {
     this.type = "HeatBlock";
     this.mass = 100;
     var multval = 20;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(200 + colormult);
-    this.g = Math.abs(0 + colormult);
-    this.b = Math.abs(0 + colormult);
+    this.pow = 0;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(200 + this.colormult);
+    this.g = Math.abs(0 + this.colormult);
+    this.b = Math.abs(0 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    this.temp = 100;
+
+    for (var xo = -1; xo < 2; xo++) {
+
+      for (var yo = -1; yo < 2; yo++) {
+        try {
+
+          if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
+            if (this.pow + 20 < 250) {
+              this.pow += 20;
+            }
+          }
+
+        } catch {
+          0;
+        }
+
+
+      }
+    }
+    if (this.pow < 0) {
+      this.pow = 0;
+    }
+
+    this.temp = this.pow;
+    this.r = Math.abs(this.colormult + this.pow + 50);
+    this.pow -= 5;
     this.updated = true;
     return nextmap;
   }
@@ -919,16 +942,43 @@ class ColdBlock {
     this.type = "ColdBlock";
     this.mass = 100;
     var multval = 50;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(0 + colormult);
-    this.g = Math.abs(0 + colormult);
-    this.b = Math.abs(200 + colormult);
+    this.pow = 0;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0 + this.colormult);
+    this.g = Math.abs(0 + this.colormult);
+    this.b = Math.abs(200 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    this.temp = -100;
+    
+    for (var xo = -1; xo < 2; xo++) {
+
+      for (var yo = -1; yo < 2; yo++) {
+        try {
+
+          if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false) {
+            if (this.pow + 20 < 250) {
+              this.pow += 20;
+            }
+          }
+
+        } catch {
+          0;
+        }
+
+
+      }
+    }
+    if (this.pow < 0) {
+      this.pow = 0;
+    }
+
+    this.temp = 0 - this.pow;
+    this.b = Math.abs(this.colormult + this.pow + 50);
+    this.pow -= 5;
     this.updated = true;
     return nextmap;
   }
+  
 }
 
 class Spawner {
