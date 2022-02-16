@@ -191,7 +191,7 @@ class Ash {
     var xr = Math.round((Math.random() * 2) - 1);
     var below = nextmap[x + xr][y + 1];
 
-    if ((below != undefined) && (below.mass <= 0.5) && (below.solid != true)) {
+    if ((below != undefined) && (below.mass < 0.1) && (below.solid != true)) {
       nextmap[x + xr][y + 1] = self;
       nextmap[x][y] = below;
     }
@@ -563,7 +563,7 @@ class Moss {
       }
       this.water -= 0.05 * Math.random();
       if (this.water <= 0) {
-        nextmap[x + xr][y + yr] = new DeadMoss();
+        nextmap[x][y] = new DeadMoss();
       }
     }
     this.b = this.water * 20;
@@ -690,7 +690,6 @@ class Head {
       nextmap[x][y] = new Tail();
     }
     this.dead = true;
-    //this.updated = true;
     return nextmap;
   }
 }
@@ -738,6 +737,8 @@ class Wire {
   }
   update(x, y, map, self, nextmap) {
     this.others = 0;
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
     if (this.dead != true) {
       for (var xo = -1; xo < 2; xo++) {
 
@@ -973,7 +974,7 @@ class Spawner {
     }
 
     this.r = this.pow + this.colormult;
-    this.pow -= 5;
+    this.pow -= 1;
     this.updated = true;
     return nextmap;
 
@@ -990,7 +991,7 @@ class Generator {
     this.mass = 100;
     var multval = 50;
     this.colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(50 + this.colormult);
+    this.r = Math.abs(150 + this.colormult);
     this.g = Math.abs(0 + this.colormult);
     this.b = Math.abs(150 + this.colormult);
   }
@@ -1001,7 +1002,7 @@ class Generator {
       var yr = Math.round((Math.random() * 2) - 1);
     }
 
-    if (nextmap[xr + x][yr + y].type != "Generator") {
+    if (nextmap[xr + x][yr + y].type == "Air" || nextmap[xr + x][yr + y].type == "Wire") {
       if (Math.random() < this.temp / 100) {
         nextmap[x + xr][y + yr] = new Head();
       }
@@ -1020,7 +1021,8 @@ class Wood {
     this.updated = false;
     this.solid = true;
     this.type = "Wood";
-    this.mass = 10;
+    this.mass = 3;
+    this.water = 5;
     var multval = 10;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(55 + colormult);
@@ -1028,13 +1030,32 @@ class Wood {
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
+
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+    var other = nextmap[x + xr][y + yr];
     if (this.temp > 6) {
       if (Math.random() >= 0.2) {
         nextmap[x][y] = new Fire();
       } else {
         nextmap[x][y] = new Ash();
       }
+    } else {
+      if (((other != undefined) && ((other.type == "Water")) && Math.random() >= 0.9)) {
+        this.water += 1;
+        if (this.water >= 5) {
+          nextmap[x + xr][y + yr] = new Moss();
+        }
+
+      } else if (other.type == "Fungus") {
+        nextmap[x + xr][y + yr] = new Moss();
+      } else if (other.type == "Gasoline") {
+        nextmap[x + xr][y + yr] = new Dirt();
+      }
+      this.water -= 0.05 * Math.random();
+
     }
+
     this.updated = true;
     return nextmap;
   }
