@@ -1,5 +1,6 @@
 var c = document.getElementById("canvas");
 var ctx = canvas.getContext('2d', { alpha: false });
+var co2 = 0;
 
 c.addEventListener("mousemove", function (e) {
   getMousePosition(c, e);
@@ -8,6 +9,7 @@ c.addEventListener("mousemove", function (e) {
 c.addEventListener("mouseout", function (e) {
   mouseX = undefined;
   mouseY = undefined;
+  mouseIsPressed = false;
 });
 
 
@@ -16,6 +18,7 @@ c.style.cursor = "none";
 var mouseX = 1;
 var mouseY = 1;
 var mouseIsPressed = false;
+var paused = false;
 
 function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
@@ -45,17 +48,52 @@ class Air {
     this.type = "Air";
     this.mass = 0;
     var multval = 55;
-    var colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(210 + colormult);
-    this.g = Math.abs(210 + colormult);
-    this.b = Math.abs(210 + colormult);
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(210 + this.colormult);
+    this.g = Math.abs(210 + this.colormult);
+    this.b = Math.abs(210 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
 
+    if (wind) {
+      this.r = Math.abs(210);
+      this.g = Math.abs(210);
+      this.b = Math.abs(210);
+    } else {
+      this.r = Math.abs(210 + this.colormult);
+      this.g = Math.abs(210 + this.colormult);
+      this.b = Math.abs(210 + this.colormult);
+    }
+    if (sco2) {
+      this.r -= Math.abs((co2 / 10));
+      this.g -= Math.abs((co2 / 10));
+      this.b -= Math.abs((co2 / 10));
+    } else {
+
+    }
+
     var below = nextmap[x][y + 1];
-    if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+    if (((below != undefined) && ((below.mass < self.mass) || (below.mass == this.mass && below.temp > this.temp && wind)) && (below.solid != true))) {
       nextmap[x][y + 1] = self;
       nextmap[x][y] = below;
+
+    } else if (wind) {
+
+      var r = Math.round((Math.random() * 2) - 1);
+      var nextpos = nextmap[x + r][y];
+      var defined = (nextpos != undefined)
+      if ((defined) && (nextpos.solid == false) && ((nextpos.temp < this.temp && nextpos.mass == this.mass)  ||  (nextpos.mass <= 2))) {
+        if (nextpos.mass >= 0) {
+        nextmap[x + r][y] = self;
+        nextmap[x][y] = nextpos;
+        } else if ((Math.random() * 2) > nextpos.mass + 0.1) {
+        nextmap[x + r][y] = self;
+        nextmap[x][y] = nextpos;
+        }
+      }
+      if (y <= 2 && co2 >= 1){
+        nextmap[x][y].temp -=  100;
+      }
     }
 
     this.updated = true;
@@ -290,6 +328,9 @@ class Fire {
         nextmap[x + xr][y + yr] = new Fire();
       }
     }
+    if (Math.random() > 0.95 && sco2) {
+      co2 += 0.1;
+    }
     this.updated = true;
     return nextmap;
   }
@@ -314,13 +355,16 @@ class Fly {
     this.b = Math.abs(100 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0) || (this.hunger <= 0)) {
+    if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0) || (this.hunger <= 0) || co2 > 300) {
       if (this.preg == false) {
         nextmap[x][y] = new Dirt();
       } else {
         nextmap[x][y] = new Fly();
       }
     } else {
+      if (Math.random() > 0.9 && sco2) {
+        co2 += 1;
+      }
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
       var other = nextmap[x + xr][y + yr];
@@ -567,6 +611,9 @@ class Moss {
       }
     }
     this.b = this.water * 20;
+    if (Math.random() > 0.99) {
+      co2 -= 1;
+    }
     this.updated = true;
     return nextmap;
   }
@@ -607,7 +654,9 @@ class DeadMoss {
       }
 
     }
-
+    if (Math.random() > 0.995) {
+      co2 -= 1;
+    }
     this.updated = true;
     return nextmap;
   }
@@ -949,7 +998,7 @@ class ColdBlock {
     this.b = Math.abs(200 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    
+
     for (var xo = -1; xo < 2; xo++) {
 
       for (var yo = -1; yo < 2; yo++) {
@@ -978,7 +1027,7 @@ class ColdBlock {
     this.updated = true;
     return nextmap;
   }
-  
+
 }
 
 class Spawner {
@@ -1003,9 +1052,9 @@ class Spawner {
 
       for (var yo = -1; yo < 2; yo++) {
 
-          if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false && this.pow + 20 <= 250) {
-              this.pow += 100;
-          }
+        if (nextmap[x + xo][y + yo].type == "Head" && nextmap[x + xo][y + yo].updated == false && this.pow + 20 <= 250) {
+          this.pow += 100;
+        }
 
       }
     }
@@ -1015,7 +1064,7 @@ class Spawner {
       var yr = Math.round((Math.random() * 2) - 1);
     }
 
-    if (this.spawns == "Air" || this.spawns == "Spawner" || this.spawns == "Wire" || this.spawns == "Head"|| this.spawns == "Tail") {
+    if (this.spawns == "Air" || this.spawns == "Spawner" || this.spawns == "Wire" || this.spawns == "Head" || this.spawns == "Tail") {
       this.spawns = nextmap[xr + x][yr + y].type;
     } else {
       if (nextmap[xr + x][yr + y].type != "Spawner" && nextmap[xr + x][yr + y].type != "Wire" && nextmap[xr + x][yr + y].type != "Head" && nextmap[xr + x][yr + y].type != "Tail" && this.pow > 5) {
@@ -1159,6 +1208,12 @@ class Water {
     } else {
       var below = nextmap[x][y + 1];
       if (((below != undefined) && (below.mass < self.mass) && (below.solid != true))) {
+        if (sco2 && Math.random() > 0.9 && co2 > 350) {
+          nextmap[x][y] = new Acid();
+          this.updated = true;
+          return nextmap;
+
+        }
         nextmap[x][y + 1] = self;
         nextmap[x][y] = below;
         this.falling = true;
@@ -1198,6 +1253,9 @@ class Gasoline {
     if (this.temp > 8) {
       nextmap[x][y] = new Fire();
       nextmap[x][y].temp += 10;
+      if (sco2) {
+        co2 += 0.5;
+      }
     } else {
       var below = nextmap[x][y + 1];
       if (((below != undefined) && (below.mass < self.mass) && (below.solid != true))) {
@@ -1383,6 +1441,9 @@ class Smoke {
           nextmap[x][y] = nextpos;
         }
       }
+      if (sco2) {
+        co2 += 0.1;
+      }
     } else {
       nextmap[x][y] = new Air();
     }
@@ -1529,7 +1590,40 @@ for (y = 0; y < height; y++) {
 var x = 0;
 var y = 0;
 
+function pause() {
+  if (paused == false) {
+    paused = true;
+    document.getElementById("pause").innerHTML = "Unpause"
+  } else if (paused) {
+    paused = false;
+    document.getElementById("pause").innerHTML = "Pause"
+  }
+  
+}
+
 function draw() {
+  sco2 = document.getElementById("co2sim").checked;
+  var heat = document.getElementById("heat").checked;
+  if (heat) {
+    document.getElementById("simwind").style.display = "inline";
+    document.getElementById("wind").style.display = "inline";
+    wind = document.getElementById("wind").checked;
+  } else {
+    document.getElementById("simwind").style.display = "none";
+    document.getElementById("wind").style.display = "none";
+    wind = false;
+  }
+  if (sco2) {
+    co2 -= co2 / 1000;
+    document.getElementById("co2").style.display = "block";
+  } else {
+    co2 = 0;
+    document.getElementById("co2").style.display = "none";
+  }
+
+  if (co2 < 0) {
+    co2 = 0;
+  }
 
   ctx.clearRect(0, 0, width * scalex, height * scaley);
 
@@ -1538,11 +1632,16 @@ function draw() {
       px = pxs[x][y];
       if (px.updated == false) {
         try {
+           if (paused == false) {
+
           nextpxs = px.update(x, y, pxs, px, nextpxs, (width - 2));
-          var xr = Math.round((Math.random() * 2) - 1);
-          var yr = Math.round((Math.random() * 2) - 1);
-          nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
-          px.temp -= (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
+            if (heat) {
+              var xr = Math.round((Math.random() * 2) - 1);
+              var yr = Math.round((Math.random() * 2) - 1);
+              nextpxs[x + xr][y + yr].temp += (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
+              px.temp -= (px.temp / 4) * nextpxs[x + xr][y + yr].cond;
+            }
+          }
 
         }
         catch {
@@ -1641,6 +1740,25 @@ function draw() {
 setup();
 
 setInterval(function () {
+  if (sco2) {
+    if (co2 < 0) {
+      co2 = 0;
+    }
+
+    var displayco2 = Math.round(co2 + Math.round(Math.random() * 30))
+
+    if (co2 > 500) {
+      document.getElementById("co2").innerHTML = "Pollution: " + "<b style =\"color: red;\">" + displayco2 + "</b>";
+    } else if (co2 < 50) {
+      document.getElementById("co2").innerHTML = "Pollution: " + "<b style =\"color: blue;\">" + displayco2 + "</b>";
+    } else if (co2 < 100) {
+      document.getElementById("co2").innerHTML = "Pollution: " + "<b style =\"color: green;\">" + displayco2 + "</b>";
+    } else {
+      document.getElementById("co2").innerHTML = "Pollution: " + "<b style =\"color: black;\">" + displayco2 + "</b>";
+    }
+  } else {
+    document.getElementById("co2").style.display = "none";
+  }
   screen = document.getElementById("screen").value;
 
   var body = document.getElementsByTagName('BODY')[0];
