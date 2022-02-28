@@ -1829,6 +1829,54 @@ function draw() {
         }
         x = 0;
         y = 0;
+        } else if (shape == "diam") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if ((xdist * scalex) + (ydist * scalex) < size) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
+        }  else if (shape == "oval") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (Math.pow((xdist * scalex), 2) + Math.pow((ydist * 1.5 * scalex), 2) < Math.pow(size, 2)) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
+        } else if (shape == "lemn") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (Math.pow((xdist * scalex), 2) + Math.pow((ydist * scalex), 2) < Math.sqrt(Math.pow(size, 2) * 2 * (Math.pow((xdist * scalex), 2) - Math.pow((ydist * scaley), 2)))) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
         }
 
 
