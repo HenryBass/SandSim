@@ -1808,6 +1808,22 @@ function draw() {
         }
         x = 0;
         y = 0;
+        } else if (shape == "funi") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (Math.pow((xdist * scalex), 3) + Math.pow((ydist * scalex), 3) < Math.pow(size, 3)) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
         }
 
 
