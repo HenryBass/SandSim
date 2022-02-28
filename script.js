@@ -91,8 +91,8 @@ class Air {
         nextmap[x][y] = nextpos;
         }
       }
-      if (y <= 2 && co2 >= 1){
-        nextmap[x][y].temp -=  100;
+      if (y <= 20 && co2 > 1){
+        nextmap[x][y].temp -= (1000 / Math.abs(co2 + 1));
       }
     }
 
@@ -406,6 +406,75 @@ class Fly {
       this.b = 200 + this.colormult;
     } else {
       this.b = 100 + this.colormult;
+    }
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
+class Cow {
+  constructor() {
+    this.temp = 3;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Cow";
+    this.preg = false;
+    this.hunger = 100;
+    this.mass = 1;
+    var multval = 55;
+    this.r = Math.abs(10);
+    this.g = Math.abs(10);
+    this.b = Math.abs(10);
+  }
+  update(x, y, map, self, nextmap) {
+    if ((this.temp > 9) || (this.life <= 0) || (this.temp < 0) || (this.hunger <= 0) || co2 > 300) {
+      if (this.preg == false) {
+        nextmap[x][y] = new Dirt();
+      } else {
+        nextmap[x][y] = new Cow();
+      }
+    } else {
+      if (Math.random() > 0.9 && sco2) {
+        co2 += 3;
+      }
+      
+      if (nextmap[x][y + 1] != undefined && nextmap[x][y + 1].type == "Air") {
+        var yr = 1;
+        var xr = 0;
+      } else {
+        var yr = 0;
+        var xr = Math.round((Math.random() * 2) - 1);
+      }
+      var other = nextmap[x + xr][y + yr];
+      if (((other != undefined) && (other.type == "Air"))) {
+
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        if (Math.random() >= 0.95 && this.preg) {
+          nextmap[x][y] = new Cow();
+          this.preg = false;
+          this.hunger = 100;
+        } else {
+          nextmap[x][y] = new Air();
+        }
+        this.hunger -= 0.1 * Math.random();
+      } else if ((other.type == 'Moss' || other.type == 'Fungus') && this.preg == false) {
+        this.preg = true;
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        this.hunger = 100;
+
+        if (Math.random() < 0.6) {
+          nextmap[x][y] = new Air();
+        } else {
+          nextmap[x][y] = new Water();
+        }
+
+
+      } else {
+
+      }
     }
     this.updated = true;
     return nextmap;
@@ -1706,7 +1775,8 @@ function draw() {
       var size = document.getElementById("size").value;
 
       if (size > 1) {
-
+      var shape = document.getElementById("shape").value;
+        if (shape == "sqar") {
         while (y < height) {
           while (x < width) {
             var xdist = Math.abs(x - (mouseX / scalex));
@@ -1722,6 +1792,23 @@ function draw() {
         }
         x = 0;
         y = 0;
+        } else if (shape == "circ") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (Math.pow((xdist * scalex), 2) + Math.pow((ydist * scalex), 2) < Math.pow(size, 2)) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
+        }
 
 
       } else {
