@@ -38,7 +38,6 @@ canvas.onmouseup = function (e) {
   mouseIsPressed = false;
 }
 
-
 class Air {
   constructor() {
     this.temp = 1;
@@ -1662,12 +1661,18 @@ var y = 0;
 function pause() {
   if (paused == false) {
     paused = true;
-    document.getElementById("pause").innerHTML = "Unpause"
+    document.getElementById("pause").innerHTML = "Unpause";
   } else if (paused) {
-    paused = false;
-    document.getElementById("pause").innerHTML = "Pause"
+    paused = false;  
+    document.getElementById("pause").innerHTML = "Pause";
   }
   
+}
+
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+      pause();
+    }
 }
 
 function draw() {
