@@ -521,39 +521,62 @@ class Quarks {
 
 }
 
+class Neuron {
+  constructor() {
+    this.bias = 0;
+    this.active = 0;
+    this.weights = array(100);
+  }
+
+  update(next) {
+    for (var i = 0; i < next.length; i++) {
+      next[i] += (this.active * this.weights[i]) + next[i].bias;      
+  }
+    return[next];
+  }
+}
+
 class AI {
   constructor() {
-    this.temp = 25;
+    this.temp = 1;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
     this.type = "AI";
+    this.energy = 100;
+    this.r = 255;
+    this.g = 0;
+    this.b = 0;
+    this.input = array(8);
+    this.hidden = array(16);
+    this.output = array(8);
     
-    this.r = Math.abs(Math.round(Math.random()) * 255);
-    this.g = Math.abs(Math.round(Math.random()) * 255);
-    this.b = Math.abs(Math.round(Math.random()) * 255);
+    for (i = 0; i < this.input.length; i++) {
+      this.input[i] = new Neuron();
+    }
+    for (i = 0; i < this.hidden.length; i++) {
+      this.hidden[i] = new Neuron();
+    }
+    for (i = 0; i < this.output.length; i++) {
+      this.output[i] = new Neuron();
+    }
+    this.mutation = 0.1;
   }
 
   update(x, y, map, self, nextmap) {
 
-    if (Math.random() > 0.99) {
-      nextmap[x][y] = new Smoke();
+    if (this.temp > 10 || this.temp < -5 || this.energy <= 0) {
+      nextmap[x][y] = new Moss();
+    } else if (this.energy >= 100) {
+      this.energy -= 50;
     } else {
 
-      var xr = Math.round((Math.random() * 8) - 4);
-      var yr = Math.round((Math.random() * 8) - 4);
-
-      var other = nextmap[x + xr][y + yr];
-
-      if ((other != undefined) && (other.type == "Air")) {
-
-        nextmap[x + xr][y + yr] = nextmap[x][y];
-        nextmap[x][y] = new Air();
-
-      }
-      this.temp = 25;
+      this.x += Math.tanh(this.output[0].active);
+      this.y += Math.tanh(this.output[1].active);
+      
     }
-
+    this.energy -= 1;
+    this.r = this.energy;
     this.updated = true;
     return nextmap;
 

@@ -7,3 +7,68 @@ body {
 a {
   font-size: 16px;
 }
+
+button {
+  background-color: rebeccapurple;
+  border: none;
+  color: white;
+  padding: 8px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+select {
+
+  border: none;
+  background-color: #c0bfbc;
+
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+
+}
+
+button:hover {
+  animation: change 0.5s ease-in forwards;  
+
+}
+
+@keyframes change {
+  from {
+    background: rebeccapurple;
+  }
+
+  to {
+    background: #1a5fb4;
+  }
+}
+
+input {
+    border: none;
+    accent-color: rebeccapurple;
+
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.sandsim {
+
+  font-size: 36px;
+
+  background: linear-gradient(to right, #813d9c 45%, #1a5fb4 55%);
+
+  
+  background-clip: text;
+  text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  }
+}
+
+
+
+
