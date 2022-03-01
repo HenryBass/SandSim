@@ -521,6 +521,46 @@ class Quarks {
 
 }
 
+class AI {
+  constructor() {
+    this.temp = 25;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "AI";
+    
+    this.r = Math.abs(Math.round(Math.random()) * 255);
+    this.g = Math.abs(Math.round(Math.random()) * 255);
+    this.b = Math.abs(Math.round(Math.random()) * 255);
+  }
+
+  update(x, y, map, self, nextmap) {
+
+    if (Math.random() > 0.99) {
+      nextmap[x][y] = new Smoke();
+    } else {
+
+      var xr = Math.round((Math.random() * 8) - 4);
+      var yr = Math.round((Math.random() * 8) - 4);
+
+      var other = nextmap[x + xr][y + yr];
+
+      if ((other != undefined) && (other.type == "Air")) {
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = new Air();
+
+      }
+      this.temp = 25;
+    }
+
+    this.updated = true;
+    return nextmap;
+
+  }
+
+}
+
 class Uranium {
   constructor() {
     this.temp = 1;
@@ -1899,7 +1939,39 @@ function draw() {
         }
         x = 0;
         y = 0;
-        }  else if (shape == "oval") {
+        }  else if (shape == "star") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if (Math.pow((xdist * scalex), 0.5) + Math.pow((ydist * scalex), 0.5) < Math.pow(size, 0.5)) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
+        } else if (shape == "diam") {
+        while (y < height) {
+          while (x < width) {
+            var xdist = Math.abs(x - (mouseX / scalex));
+            var ydist = Math.abs(y - (mouseY / scaley));
+            if ((xdist * scalex) + (ydist * scalex) < size) {
+              eval("var placepx = new " + blocktype + "();")
+              pxs[Math.round(x)][Math.round(y)] = placepx;
+            }
+            x++;
+          }
+          x = 0;
+          y++;
+        }
+        x = 0;
+        y = 0;
+        } else if (shape == "oval") {
         while (y < height) {
           while (x < width) {
             var xdist = Math.abs(x - (mouseX / scalex));
