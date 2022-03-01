@@ -536,8 +536,62 @@ class Uranium {
     this.b = Math.abs(0 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp >= 20) {
+    if (this.temp >= 10) {
       nextmap[x][y] = new GammaRay();
+    } else {
+      var below = nextmap[x][y + 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y + 1] = self;
+        nextmap[x][y] = below;
+      } else {
+        var r = Math.round((Math.random() * 2) - 1);
+        var nextpos = nextmap[x + r][y + 1];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false) && (nextpos.mass < this.mass)) {
+          nextmap[x + r][y + 1] = self;
+          nextmap[x][y] = nextpos;
+        }
+      }
+
+      if (this.temp > 0) {
+        this.r = 0 + (this.temp * 50) + this.colormult;
+
+      } else {
+        this.r = 0 + this.colormult;
+
+      }
+    }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Thorium {
+  constructor() {
+    this.temp = 1;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Thorium";
+    this.mass = 10;
+    var multval = 70;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0 + this.colormult);
+    this.g = Math.abs(80 + this.colormult);
+    this.b = Math.abs(150 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp >= 20) {
+      for (var i = 0; i < 4; i ++) {
+        var xr = Math.round((Math.random() * 2) - 1);
+        var yr = Math.round((Math.random() * 2) - 1);
+        if (nextmap[x + xr][y + yr].type == "Air") {
+          nextmap[x + xr][y + yr] = new GammaRay();
+        }
+        if (Math.random() < 0.5) {
+        nextmap[x][y] = new GammaRay();
+        }
+      }
     } else {
       var below = nextmap[x][y + 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
