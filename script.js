@@ -90,9 +90,7 @@ class Air {
         nextmap[x][y] = nextpos;
         }
       }
-      if (y <= 20 && co2 > 1){
-        nextmap[x][y].temp -= (1000 / Math.abs(co2 + 1));
-      }
+
     }
 
     this.updated = true;
