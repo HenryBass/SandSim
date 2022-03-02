@@ -339,30 +339,43 @@ class Fire {
 
 class Lightning {
   constructor() {
-    this.temp = 35;
+    this.temp = 500;
     this.cond = 0;
     this.updated = false;
     this.solid = true;
     this.type = "Lightning";
     this.mass = 0;
     var multval = 20;
+    this.dead = false;
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(220 + colormult);
     this.g = Math.abs(220 + colormult);
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
-    if (this.temp < 9 || Math.random() >= 0.9) {
-      nextmap[x][y] = new Smoke();
-    } else {
-      var xr = Math.round((Math.random() * 2) - 1);
-      var yr = Math.round((Math.random() * 2) - 1);
-      var other = nextmap[x + xr][y + yr];
-      if ((other != undefined) && (other.type == "Wood") || (other.type == "Moss")) {
+    if (this.dead) {
 
-        nextmap[x + xr][y + yr] = new Fire();
-      }
+        if (Math.random() > 0.99) {
+          nextmap[x][y] = new Smoke()
+        } else {
+          nextmap[x][y] = new Air()
+        }
+
+      this.updated = true;
+      return nextmap;
     }
+    this.dead = true;
+    var dist = 1;
+    var xr = Math.round((Math.random() * 2) - 1);
+      
+    if (nextmap[x + xr][y + dist].type == "Air") {
+        nextmap[x + xr][y + dist] = new Lightning();
+        var xr = Math.round((Math.random() * 2) - 1);
+        dist+=1;
+      } else  if (nextmap[x + xr][y + dist].type == "Wire"){
+        nextmap[x + xr][y + dist] = new Head();
+      }
+    
     if (Math.random() > 0.95 && sco2) {
       co2 += 0.1;
     }
@@ -1586,7 +1599,7 @@ class Gasoline {
 
 class Steam {
   constructor() {
-    this.temp = 7;
+    this.temp = 30;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
@@ -1662,7 +1675,7 @@ class Hydrogen {
 
     else if (self.temp <= 12) {
       var below = nextmap[x][y - 1];
-      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+      if ((below != undefined) && (below.mass > self.mass) && (below.solid != true)) {
         nextmap[x][y - 1] = self;
         nextmap[x][y] = below;
       } else {
