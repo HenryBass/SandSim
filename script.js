@@ -1599,7 +1599,7 @@ class Gasoline {
 
 class Steam {
   constructor() {
-    this.temp = 30;
+    this.temp = 15;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
