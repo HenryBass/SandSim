@@ -115,7 +115,9 @@ class Sand {
     this.b = Math.abs(108 + this.colormult);
   }
   update(x, y, map, self, nextmap) {
-
+        if (this.temp > 10) {
+      nextmap[x][y] = new Glass();
+    } else {
     var below = nextmap[x][y + 1];
     if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
       nextmap[x][y + 1] = self;
@@ -135,6 +137,7 @@ class Sand {
       this.b = 108 - this.temp + this.colormult;
       this.r = 195 + this.temp + this.colormult;
     }
+        }
 
     this.updated = true;
     return nextmap;
@@ -313,6 +316,41 @@ class Fire {
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(200 + colormult);
     this.g = Math.abs(120 + colormult);
+    this.b = Math.abs(0 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp < 9 || Math.random() >= 0.9) {
+      nextmap[x][y] = new Smoke();
+    } else {
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+      var other = nextmap[x + xr][y + yr];
+      if ((other != undefined) && (other.type == "Wood") || (other.type == "Moss")) {
+
+        nextmap[x + xr][y + yr] = new Fire();
+      }
+    }
+    if (Math.random() > 0.95 && sco2) {
+      co2 += 0.1;
+    }
+    this.updated = true;
+    return nextmap;
+  }
+
+}
+
+class Lightning {
+  constructor() {
+    this.temp = 35;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Lightning";
+    this.mass = 0;
+    var multval = 20;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(220 + colormult);
+    this.g = Math.abs(220 + colormult);
     this.b = Math.abs(0 + colormult);
   }
   update(x, y, map, self, nextmap) {
@@ -874,6 +912,39 @@ class Stone {
       this.g = 50 + this.colormult;
       this.b = 50 + this.colormult;
       this.r = 50 + this.colormult;
+    }
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Glass {
+  constructor() {
+    this.temp = 1;
+    this.cond = 0.7;
+    this.updated = false;
+    this.solid = true;
+    this.type = "Glass";
+    this.mass = 12;
+    var multval = 5;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(120 + this.colormult);
+    this.g = Math.abs(120 + this.colormult);
+    this.b = Math.abs(120 + this.colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    if (this.temp > 17) {
+      nextmap[x][y] = new Lava();
+    }
+
+    if (this.temp > 0) {
+      this.g = 120 - (this.temp * 5) + this.colormult;
+      this.b = 120 - (this.temp * 5) + this.colormult;
+      this.r = 120 + (this.temp * 5) + this.colormult;
+    } else {
+      this.g = 120 + this.colormult;
+      this.b = 120 + this.colormult;
+      this.r = 120 + this.colormult;
     }
     this.updated = true;
     return nextmap;

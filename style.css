@@ -2,6 +2,7 @@ body {
   margin: 0px;
   text-align: center;
   font-family: monospace;
+
 }
 
 a {
@@ -12,7 +13,7 @@ button {
   background-color: rebeccapurple;
   border: none;
   color: white;
-  padding: 8px 8px;
+  padding: 4px 4px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -22,9 +23,9 @@ button {
 select {
 
   border: none;
-  background-color: #c0bfbc;
+  background-color: #deddda;
 
-  text-align: center;
+
   text-decoration: none;
   display: inline-block;
 
@@ -56,7 +57,7 @@ input {
 
 .sandsim {
 
-  font-size: 36px;
+  font-size: 32px;
 
   background: linear-gradient(to right, #813d9c 45%, #1a5fb4 55%);
 
