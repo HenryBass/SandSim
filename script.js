@@ -557,6 +557,44 @@ class Quarks {
 
 }
 
+class Neutron {
+  constructor() {
+    this.temp = 2;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Neutron";
+
+    this.r = Math.abs(150 + Math.random() * 20);
+    this.g = Math.abs(160 + Math.random() * 20);
+    this.b = Math.abs(150 + Math.random() * 20);
+  }
+
+  update(x, y, map, self, nextmap) {
+
+
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+
+      var other = nextmap[x + xr][y + yr];
+
+      if ((other != undefined) && (other.solid == false) && other.type != "Uranium" && other.type != "Thorium") {
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = other;
+
+      } else if (other.type == "Uranium" || other.type == "Thorium") {
+        nextmap[x + xr][y + yr] = new GammaRay;
+        nextmap[x][y] = new Air();
+      }
+
+    this.updated = true;
+    return nextmap;
+
+  }
+
+}
+
 class Neuron {
   constructor() {
     this.bias = 0;
@@ -1447,6 +1485,7 @@ class Water {
     this.mass = 1;
     this.falling = false;
     var multval = 55;
+    
     var colormult = Math.round((Math.random() * multval) - (multval / 2));
     this.r = Math.abs(0 + colormult);
     this.g = Math.abs(50 + colormult);
@@ -1585,6 +1624,66 @@ class Hydrogen {
     this.r = Math.abs(150 + colormult);
     this.g = Math.abs(170 + colormult);
     this.b = Math.abs(170 + colormult);
+  }
+  update(x, y, map, self, nextmap) {
+    var xr = Math.round((Math.random() * 2) - 1);
+    var yr = Math.round((Math.random() * 2) - 1);
+
+    if (nextmap[x + xr][y + yr].type == "Oxygen") {
+      if (Math.random() > 0.5) {
+        nextmap[x][y] = new Water();
+        nextmap[x][y].temp += 7;
+      } else {
+        nextmap[x + xr][y + yr] = new Water();
+        nextmap[x + xr][y + yr].temp += 7;
+      }
+
+      this.updated = true;
+      return nextmap;
+    } else if (nextmap[x + xr][y + yr].type == "Neutron"){
+      nextmap[x + xr][y + yr] = new Deuterium();
+
+      this.updated = true;
+      return nextmap;
+      
+    }
+
+    else if (self.temp <= 12) {
+      var below = nextmap[x][y - 1];
+      if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
+        nextmap[x][y - 1] = self;
+        nextmap[x][y] = below;
+      } else {
+        var nextpos = nextmap[x + xr][y];
+        var defined = (nextpos != undefined)
+        if ((defined) && (nextpos.solid == false)) {
+          nextmap[x + xr][y] = self;
+          nextmap[x][y] = nextpos;
+        }
+      }
+    } else {
+      nextmap[x][y] = new Fire();
+      nextmap[x][y].temp += 20;
+    }
+
+    this.updated = true;
+    return nextmap;
+  }
+}
+
+class Deuterium {
+  constructor() {
+    this.temp = 0;
+    this.cond = 1;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Deuterium";
+    this.mass = 0;
+    var multval = 55;
+    var colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(120 + colormult);
+    this.g = Math.abs(150 + colormult);
+    this.b = Math.abs(150 + colormult);
   }
   update(x, y, map, self, nextmap) {
     var xr = Math.round((Math.random() * 2) - 1);
