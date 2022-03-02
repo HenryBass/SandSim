@@ -572,7 +572,9 @@ class Neutron {
 
   update(x, y, map, self, nextmap) {
 
-
+      if (Math.random()  > 0.995) {
+        nextmap[x][y] = new Smoke()
+      } else {
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
 
@@ -586,6 +588,7 @@ class Neutron {
       } else if (other.type == "Uranium" || other.type == "Thorium") {
         nextmap[x + xr][y + yr] = new GammaRay;
         nextmap[x][y] = new Air();
+      }
       }
 
     this.updated = true;
@@ -674,7 +677,16 @@ class Uranium {
   }
   update(x, y, map, self, nextmap) {
     if (this.temp >= 10) {
-      nextmap[x][y] = new GammaRay();
+      for (var i = 0; i < 2; i ++) {
+        var xr = Math.round((Math.random() * 2) - 1);
+        var yr = Math.round((Math.random() * 2) - 1);
+        if (nextmap[x + xr][y + yr].type == "Air") {
+          nextmap[x + xr][y + yr] = new Neutron();
+        }
+        if (Math.random() < 0.5) {
+        nextmap[x][y] = new GammaRay();
+        }
+      }
     } else {
       var below = nextmap[x][y + 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
@@ -723,7 +735,7 @@ class Thorium {
         var xr = Math.round((Math.random() * 2) - 1);
         var yr = Math.round((Math.random() * 2) - 1);
         if (nextmap[x + xr][y + yr].type == "Air") {
-          nextmap[x + xr][y + yr] = new GammaRay();
+          nextmap[x + xr][y + yr] = new Neutron();
         }
         if (Math.random() < 0.5) {
         nextmap[x][y] = new GammaRay();
