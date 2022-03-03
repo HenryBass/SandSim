@@ -1711,6 +1711,9 @@ class Deuterium {
     this.b = Math.abs(150 + colormult);
   }
   update(x, y, map, self, nextmap) {
+    if (Math.random() > 0.999 && nextmap[x][y+1].type == "Air") {
+      nextmap[x][y] = new Lightning();
+    } else {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
 
@@ -1744,7 +1747,7 @@ class Deuterium {
       nextmap[x][y] = new Fire();
       nextmap[x][y].temp += 20;
     }
-
+    }
     this.updated = true;
     return nextmap;
   }
