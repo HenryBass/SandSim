@@ -1450,7 +1450,7 @@ class Wood {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
     var other = nextmap[x + xr][y + yr];
-    if (this.temp > 6) {
+    if (this.temp > 12) {
       if (Math.random() >= 0.2) {
         nextmap[x][y] = new Fire();
       } else {
@@ -1699,7 +1699,7 @@ class Hydrogen {
 class Deuterium {
   constructor() {
     this.temp = 0;
-    this.cond = 1;
+    this.cond = 0.2;
     this.updated = false;
     this.solid = false;
     this.type = "Deuterium";
@@ -1730,7 +1730,7 @@ class Deuterium {
       return nextmap;
     }
 
-    else if (self.temp <= 12) {
+    else if (self.temp <= 25) {
       var below = nextmap[x][y - 1];
       if ((below != undefined) && (below.mass < self.mass) && (below.solid != true)) {
         nextmap[x][y - 1] = self;
