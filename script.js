@@ -71,6 +71,8 @@ class Air {
 
     }
 
+
+
     var below = nextmap[x][y + 1];
     if (((below != undefined) && ((below.mass < self.mass) || (below.mass == this.mass && below.temp > this.temp && wind)) && (below.solid != true))) {
       nextmap[x][y + 1] = self;
@@ -1085,6 +1087,55 @@ class Tail {
   }
 }
 
+class CGOL {
+  constructor() {
+    this.temp = 5;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = true;
+    this.type = "COGL";
+    this.mass = 100;
+    this.dead = false;
+    var multval = 0;
+    this.others = 0;
+    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
+    this.r = Math.abs(0);
+    this.g = Math.abs(0);
+    this.b = Math.abs(0);
+  }
+  update(x, y, map, self, nextmap) {
+
+      for (var xo = -1; xo < 2; xo++) {
+
+        for (var yo = -1; yo < 2; yo++) {
+          try {
+
+            if (nextmap[x + xo][y + yo].type == "CGOL" && nextmap[x + xo][y + yo].updated == false) {
+              this.others += 1;
+            }
+
+          } catch {
+            0;
+          }
+
+
+        }
+      }
+      if (this.others == 2 || this.others == 3) {
+        nextmap[x][y] = new CGOL();
+        nextmap[x][y].updated = true;
+      } else if (this.others > 3) {
+        nextmap[x][y] = new Air();
+      } else if (this.others < 2) {
+        nextmap[x][y] = new Air();
+      }
+    
+    this.dead = false;
+    this.updated = true;
+    return nextmap;
+  }
+}
+
 class Wire {
   constructor() {
     this.temp = 1;
@@ -1450,7 +1501,7 @@ class Wood {
     var xr = Math.round((Math.random() * 2) - 1);
     var yr = Math.round((Math.random() * 2) - 1);
     var other = nextmap[x + xr][y + yr];
-    if (this.temp > 12) {
+    if (this.temp > 16) {
       if (Math.random() >= 0.2) {
         nextmap[x][y] = new Fire();
       } else {
@@ -1699,7 +1750,7 @@ class Hydrogen {
 class Deuterium {
   constructor() {
     this.temp = 0;
-    this.cond = 0.2;
+    this.cond = 0.4;
     this.updated = false;
     this.solid = false;
     this.type = "Deuterium";
