@@ -547,8 +547,12 @@ class Quarks {
 
   update(x, y, map, self, nextmap) {
 
-    if (Math.random() > 0.99) {
-      nextmap[x][y] = new Smoke();
+    if (this.r >= 255 & this.g >= 255 && this.b >= 255) {
+      if (Math.random() >= 0.5) {
+        nextmap[x][y] = new Neutron();
+      } else {
+        nextmap[x][y] = new Proton();     
+      }
     } else {
 
       var xr = Math.round((Math.random() * 8) - 4);
@@ -556,11 +560,24 @@ class Quarks {
 
       var other = nextmap[x + xr][y + yr];
 
-      if ((other != undefined) && (other.type == "Air")) {
+      if ((other != undefined) && (other.type == "Air") && other.type != "Quarks") {
 
         nextmap[x + xr][y + yr] = nextmap[x][y];
         nextmap[x][y] = new Air();
 
+      } else if (other.type == "Quarks"){
+
+        if (this.r < 255) {
+          this.r += other.r;
+        }
+        if (this.g < 255) {
+          this.g += other.g;
+        }
+        if (this.b < 355) {
+          this.b += other.b;
+        }
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = new Air();
       }
       this.temp = 25;
     }
@@ -587,9 +604,7 @@ class Neutron {
 
   update(x, y, map, self, nextmap) {
 
-      if (Math.random()  > 0.995) {
-        nextmap[x][y] = new Smoke()
-      } else {
+
       var xr = Math.round((Math.random() * 2) - 1);
       var yr = Math.round((Math.random() * 2) - 1);
 
@@ -601,10 +616,86 @@ class Neutron {
         nextmap[x][y] = other;
 
       } else if (other.type == "Uranium" || other.type == "Thorium") {
-        nextmap[x + xr][y + yr] = new GammaRay;
+        nextmap[x + xr][y + yr] = new GammaRay();
         nextmap[x][y] = new Air();
       }
+      
+
+    this.updated = true;
+    return nextmap;
+
+  }
+
+}
+
+class Proton {
+  constructor() {
+    this.temp = 2;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Proton";
+
+    this.r = Math.abs(200 + Math.random() * 50);
+    this.g = Math.abs(20 + Math.random());
+    this.b = Math.abs(20 + Math.random());
+  }
+
+  update(x, y, map, self, nextmap) {
+
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+
+      var other = nextmap[x + xr][y + yr];
+
+      if ((other != undefined) && (other.solid == false) && other.type != "Electron") {
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = other;
+
+      } else if (other.type == "Electron") {
+        nextmap[x + xr][y + yr] = new Hydrogen();
+        nextmap[x][y] = new Air();
       }
+      
+
+    this.updated = true;
+    return nextmap;
+
+  }
+
+}
+class Electron {
+  constructor() {
+    this.temp = 2;
+    this.cond = 0;
+    this.updated = false;
+    this.solid = false;
+    this.type = "Electron";
+
+    this.r = Math.abs(20 + Math.random());
+    this.g = Math.abs(20 + Math.random());
+    this.b = Math.abs(200 + Math.random() * 50);
+  }
+
+  update(x, y, map, self, nextmap) {
+
+
+      var xr = Math.round((Math.random() * 2) - 1);
+      var yr = Math.round((Math.random() * 2) - 1);
+
+      var other = nextmap[x + xr][y + yr];
+
+      if ((other != undefined) && (other.solid == false) && other.type != "Wire") {
+
+        nextmap[x + xr][y + yr] = nextmap[x][y];
+        nextmap[x][y] = other;
+
+      } else if (other.type == "Wire") {
+        nextmap[x + xr][y + yr] = new Head();
+        nextmap[x][y] = new Air();
+      }
+      
 
     this.updated = true;
     return nextmap;
@@ -1083,55 +1174,6 @@ class Tail {
     }
     this.dead = true;
 
-    return nextmap;
-  }
-}
-
-class CGOL {
-  constructor() {
-    this.temp = 5;
-    this.cond = 0;
-    this.updated = false;
-    this.solid = true;
-    this.type = "COGL";
-    this.mass = 100;
-    this.dead = false;
-    var multval = 0;
-    this.others = 0;
-    this.colormult = Math.round((Math.random() * multval) - (multval / 2));
-    this.r = Math.abs(0);
-    this.g = Math.abs(0);
-    this.b = Math.abs(0);
-  }
-  update(x, y, map, self, nextmap) {
-
-      for (var xo = -1; xo < 2; xo++) {
-
-        for (var yo = -1; yo < 2; yo++) {
-          try {
-
-            if (nextmap[x + xo][y + yo].type == "CGOL" && nextmap[x + xo][y + yo].updated == false) {
-              this.others += 1;
-            }
-
-          } catch {
-            0;
-          }
-
-
-        }
-      }
-      if (this.others == 2 || this.others == 3) {
-        nextmap[x][y] = new CGOL();
-        nextmap[x][y].updated = true;
-      } else if (this.others > 3) {
-        nextmap[x][y] = new Air();
-      } else if (this.others < 2) {
-        nextmap[x][y] = new Air();
-      }
-    
-    this.dead = false;
-    this.updated = true;
     return nextmap;
   }
 }
