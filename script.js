@@ -534,7 +534,7 @@ class Cow {
 
 class Quarks {
   constructor() {
-    this.temp = 25;
+    this.temp = 10;
     this.cond = 1;
     this.updated = false;
     this.solid = false;
@@ -567,19 +567,19 @@ class Quarks {
 
       } else if (other.type == "Quarks"){
 
-        if (this.r < 255) {
+        if (this.r < 255 && this.r + other.r <= 255) {
           this.r += other.r;
         }
-        if (this.g < 255) {
+        if (this.g < 255 && this.g + other.g <= 255) {
           this.g += other.g;
         }
-        if (this.b < 355) {
+        if (this.b < 255 && this.b + other.b <= 255) {
           this.b += other.b;
         }
         nextmap[x + xr][y + yr] = nextmap[x][y];
         nextmap[x][y] = new Air();
       }
-      this.temp = 25;
+
     }
 
     this.updated = true;
