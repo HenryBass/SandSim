@@ -1041,7 +1041,7 @@ class DeadMoss {
 
 class Stone {
   constructor() {
-    this.temp = 1;
+    this.temp = 0;
     this.cond = 0.8;
     this.updated = false;
     this.solid = true;
@@ -1307,13 +1307,13 @@ class Copper {
       nextmap[x][y] = new Lava();
     }
     if (this.temp > 0) {
-      this.r = 185 + (this.temp * 5) + this.colormult + this.ox * 5;
-      this.g = 95 + (this.temp * 5) + this.colormult + this.ox * 3;
-      this.b = 0 - (this.temp * 5) + this.colormult - this.ox * 5;
+      this.r = 185 + (this.temp * 5) + this.colormult - this.ox * 3;
+      this.g = 95 + (this.temp * 5) + this.colormult + this.ox * 5;
+      this.b = 0 - (this.temp * 5) + this.colormult + this.ox * 3;
     } else {
-      this.r = 185 + this.colormult + this.ox * 5;
-      this.g = 95 + this.colormult + this.ox * 3;
-      this.b = 0 - this.colormult - this.ox * 5;
+      this.r = 185 + this.colormult - this.ox * 3;
+      this.g = 95 + this.colormult + this.ox * 5;
+      this.b = 0 - this.colormult + this.ox * 3;
     }
 
     if (this.ox > 15) {
@@ -1573,7 +1573,7 @@ class Wood {
 class Ice {
   constructor() {
     this.temp = -10;
-    this.cond = 0.7;
+    this.cond = 0.4;
     this.updated = false;
     this.solid = true;
     this.type = "Ice";
@@ -2053,12 +2053,31 @@ function makeArray(width, height) {
 pxs = makeArray(width, height);
 var nextpxs = pxs;
 
+noise.seed(Math.random());
+var noisemap = []
+
+for (i=0;i<screen;i++) {
+  noisemap.push(noise.perlin2(i / (screen / 2), 0) * 50)
+}
+
+noise.seed(Math.random());
+for (i=0;i<screen;i++) {
+  noisemap[i] += (noise.perlin2(i / 30, 0) * 40)
+}
+
+noise.seed(Math.random());
+for (i=0;i<screen;i++) {
+  noisemap[i] += Math.round(Math.random())
+}
+noise.seed(Math.random());
 
 for (y = 0; y < height; y++) {
   for (x = 0; x < width; x++) {
-    var pixel = new Air();
-    pxs[x][y] = pixel;
+var pixel = new Air()
+  pxs[x][y] = pixel;
+    
   }
+  
 }
 
 var x = 0;
